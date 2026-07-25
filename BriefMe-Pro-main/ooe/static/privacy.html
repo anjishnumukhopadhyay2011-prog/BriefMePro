@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Privacy Policy · BriefMe Pro</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #07080b;
+      color: #b4bac3;
+      font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 18px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(7,8,11,0.85);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .brand { color: #f2f4f7; font-weight: 600; font-size: 1rem; text-decoration: none; letter-spacing: -0.01em; }
+    nav { display: flex; gap: 18px; }
+    nav a { color: #8a8f98; text-decoration: none; font-size: 0.86rem; transition: color 140ms; }
+    nav a:hover { color: #f2f4f7; }
+    .content { max-width: 760px; margin: 0 auto; padding: 64px 32px 48px; }
+    h1 { font-size: 2.1rem; font-weight: 600; color: #f2f4f7; letter-spacing: -0.025em; margin-bottom: 10px; }
+    .updated { font-size: 0.78rem; color: #7a808a; margin-bottom: 48px; }
+    .lead { font-size: 1rem; line-height: 1.65; color: #b4bac3; margin-bottom: 36px; }
+    h2 { font-size: 1.05rem; font-weight: 600; color: #e8eaee; margin: 32px 0 10px; letter-spacing: -0.01em; }
+    p, li { font-size: 0.92rem; line-height: 1.72; color: #9aa0a9; }
+    ul { padding-left: 20px; margin: 8px 0 4px; }
+    li { margin-bottom: 4px; }
+    a.inline { color: #9ab4ff; text-decoration: none; }
+    a.inline:hover { text-decoration: underline; }
+    table {
+      width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px; text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    th { color: #e8eaee; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    td { color: #9aa0a9; }
+    footer {
+      text-align: center; padding: 32px;
+      font-size: 0.78rem; color: #7a808a;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 64px;
+    }
+    footer a { color: #b4bac3; text-decoration: none; }
+    footer a:hover { color: #f2f4f7; }
+    .sep { color: #4a4f58; margin: 0 10px; }
+
+    @media (max-width: 640px) {
+      html, body { max-width: 100%; overflow-x: hidden; }
+      header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+      nav { gap: 14px; flex-wrap: wrap; }
+      nav a { font-size: 0.82rem; }
+      .content { padding: 40px 20px 32px; }
+      h1 { font-size: 1.7rem; }
+      h2 { font-size: 1rem; margin-top: 26px; }
+      p, li { font-size: 0.92rem; line-height: 1.65; }
+      .lead { font-size: 0.96rem; }
+      table { font-size: 0.82rem; }
+      th, td { padding: 8px 10px; }
+      footer { padding: 24px 16px; font-size: 0.74rem; line-height: 1.8; }
+      .sep { display: none; }
+      footer a { display: inline-block; margin: 0 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">BriefMe Pro</a>
+    <nav>
+      <a href="/terms">Terms</a>
+      <a href="/refund">Refund Policy</a>
+      <a href="/login">Sign in</a>
+    </nav>
+  </header>
+
+  <main class="content">
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: 25 April 2026</p>
+
+    <p class="lead">
+      We collect the minimum information needed to operate BriefMe Pro and we never sell
+      it. This policy explains what we store, why, who has access to it, and how to
+      exercise your rights under GDPR, UK GDPR, and CCPA/CPRA.
+    </p>
+
+    <h2>1. Who is responsible</h2>
+    <p>
+      The data controller is Anjishnu Mukhopadhyay (the &ldquo;Provider&rdquo;).
+      Privacy contact:
+      <a class="inline" href="mailto:privacy@briefme.pro">privacy@briefme.pro</a>.
+    </p>
+
+    <h2>2. What we collect</h2>
+    <table>
+      <thead>
+        <tr><th>Data</th><th>Why</th><th>Retention</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Email, display name</td><td>Account, login, transactional email</td><td>Until account deletion</td></tr>
+        <tr><td>Password hash (PBKDF2-SHA256)</td><td>Authentication</td><td>Until account deletion</td></tr>
+        <tr><td>IP address, user-agent (login &amp; security events)</td><td>Brute-force protection, fraud detection</td><td>90 days</td></tr>
+        <tr><td>Stripe / Razorpay customer ID</td><td>Subscription billing</td><td>Until account deletion + 7 yr (tax)</td></tr>
+        <tr><td>Interactions (👍/👎 on stories)</td><td>Per-user personalisation</td><td>Until account deletion</td></tr>
+        <tr><td>Google / Apple subject ID</td><td>OAuth sign-in</td><td>Until account deletion</td></tr>
+      </tbody>
+    </table>
+    <p>
+      We do <strong>not</strong> store credit-card numbers, CVCs, or bank credentials.
+      Those are handled exclusively by Stripe and Razorpay.
+    </p>
+
+    <h2>3. What we do not collect</h2>
+    <ul>
+      <li>No advertising or analytics cookies. Only an essential session cookie and a refresh-token cookie.</li>
+      <li>No third-party tracking scripts (Google Analytics, Facebook Pixel, etc.).</li>
+      <li>No location data beyond IP-derived country for fraud signals.</li>
+      <li>No content of stories you read &mdash; only your reactions to them, when you choose to give one.</li>
+    </ul>
+
+    <h2>4. How we use it</h2>
+    <ul>
+      <li>To operate the Service (auth, sessions, billing, email verification, password reset).</li>
+      <li>To personalise your story feed based on the regions/topics you react to.</li>
+      <li>To detect abuse (rate-limit failed logins, lock compromised accounts).</li>
+      <li>To comply with legal and tax obligations.</li>
+    </ul>
+
+    <h2>5. Sub-processors</h2>
+    <p>The following third parties process limited data on our behalf:</p>
+    <ul>
+      <li><strong>Stripe, Inc.</strong> &mdash; payments (USA).</li>
+      <li><strong>Razorpay Software Pvt Ltd</strong> &mdash; payments (India).</li>
+      <li><strong>Resend, Inc.</strong> &mdash; transactional email (USA).</li>
+      <li><strong>Groq, Inc.</strong> &mdash; LLM inference for scenario text. Only the public event data and the user&rsquo;s region/category preferences are sent &mdash; never email, name, IP, or any account identifier.</li>
+      <li><strong>Google LLC</strong> / <strong>Apple Inc.</strong> &mdash; sign-in (only when you click the OAuth button).</li>
+      <li><strong>Railway Corp.</strong> &mdash; hosting (USA).</li>
+      <li><strong>Sentry</strong> &mdash; error monitoring with PII scrubbing enabled (when configured).</li>
+    </ul>
+
+    <h2>6. International transfers</h2>
+    <p>
+      Data is processed in the USA, the EU, and India depending on the sub-processor.
+      Transfers from the EU/UK rely on the EU Standard Contractual Clauses or equivalent
+      safeguards published by the relevant sub-processor.
+    </p>
+
+    <h2>7. Your rights</h2>
+    <p>You can exercise the following at any time, free of charge:</p>
+    <ul>
+      <li><strong>Access &amp; portability</strong> &mdash; Account &rarr; Export Data downloads a JSON of everything we hold about you.</li>
+      <li><strong>Erasure</strong> &mdash; Account &rarr; Danger Zone deletes your account. Personal fields are anonymised within 30 days; full row-level deletion completes within 90 days. Tax-relevant payment records are retained for 7 years per applicable law.</li>
+      <li><strong>Correction</strong> &mdash; update your profile from Account, or email <a class="inline" href="mailto:privacy@briefme.pro">privacy@briefme.pro</a>.</li>
+      <li><strong>Object / restrict</strong> &mdash; email us; we&rsquo;ll respond within 30 days.</li>
+      <li><strong>Lodge a complaint</strong> &mdash; with your local data-protection authority. EU residents: any DPA in your country. UK: ICO.</li>
+    </ul>
+
+    <h2>8. Security</h2>
+    <p>
+      Data in transit is protected by TLS 1.2+. Passwords are hashed with PBKDF2-HMAC-SHA256
+      (260 000 iterations, 32-byte salt). Sessions use signed JWTs with rotating refresh
+      tokens. The database runs in WAL mode behind authenticated network access. We do not
+      claim perfect security &mdash; if you believe you have found a vulnerability, please
+      email <a class="inline" href="mailto:security@briefme.pro">security@briefme.pro</a>.
+    </p>
+
+    <h2>9. Cookies</h2>
+    <p>We set two cookies, both essential:</p>
+    <ul>
+      <li><code>ooe_session</code> &mdash; signed JWT, HttpOnly, SameSite=Lax. Expires in 7 or 90 days depending on &ldquo;remember this device&rdquo;.</li>
+      <li><code>ooe_refresh</code> &mdash; opaque refresh token, HttpOnly, SameSite=Lax. Expires in 14 or 90 days.</li>
+    </ul>
+    <p>No analytics or advertising cookies are set.</p>
+
+    <h2>10. Children</h2>
+    <p>
+      The Service is not directed to children under 16 (under 13 in the US). We do not
+      knowingly collect data from children. If you believe a child has registered, email
+      <a class="inline" href="mailto:privacy@briefme.pro">privacy@briefme.pro</a> and we
+      will delete the account.
+    </p>
+
+    <h2>11. Changes</h2>
+    <p>
+      Material changes to this policy will be announced by email at least 14 days before
+      they take effect. The current version is always available at this URL.
+    </p>
+
+    <h2>12. Contact</h2>
+    <p>
+      All privacy requests:
+      <a class="inline" href="mailto:privacy@briefme.pro">privacy@briefme.pro</a>. We aim
+      to respond within 7 working days; legal SLA is 30 days.
+    </p>
+  </main>
+
+  <footer>
+    &copy; 2026 BriefMe Pro
+    <span class="sep">&middot;</span> <a href="/terms">Terms</a>
+    <span class="sep">&middot;</span> <a href="/privacy">Privacy</a>
+    <span class="sep">&middot;</span> <a href="/refund">Refund</a>
+  </footer>
+</body>
+</html>

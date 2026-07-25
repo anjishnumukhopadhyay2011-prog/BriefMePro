@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing · BriefMe Pro</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+  <meta name="description" content="Simple, honest pricing. 14-day money-back guarantee. Cancel anytime.">
+  <meta property="og:title" content="BriefMe Pro — Pricing">
+  <meta property="og:description" content="Live geopolitical intelligence from $9/month. 14-day money-back guarantee.">
+  <meta property="og:image" content="/og-image.svg">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #07080b;
+      color: #b4bac3;
+      font-family: -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    header {
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 18px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(7,8,11,0.85);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .brand { color: #f2f4f7; font-weight: 600; font-size: 1rem; text-decoration: none; letter-spacing: -0.01em; }
+    nav { display: flex; gap: 18px; align-items: center; }
+    nav a { color: #8a8f98; text-decoration: none; font-size: 0.86rem; transition: color 140ms; }
+    nav a:hover { color: #f2f4f7; }
+    .nav-cta {
+      background: #f2f4f7; color: #0c0e13; padding: 8px 16px;
+      border-radius: 8px; font-weight: 600; font-size: 0.88rem;
+      text-decoration: none; transition: background 140ms;
+    }
+    .nav-cta:hover { background: #fff; }
+
+    .hero { text-align: center; padding: 80px 24px 40px; max-width: 720px; margin: 0 auto; }
+    h1 { font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 600; color: #f2f4f7; letter-spacing: -0.03em; margin-bottom: 16px; }
+    .lead { font-size: 1.1rem; color: #b4bac3; line-height: 1.55; }
+
+    .toggle-wrap { display: flex; justify-content: center; padding: 24px; }
+    .toggle {
+      display: flex; gap: 4px; padding: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+    }
+    .toggle button {
+      padding: 8px 18px; border-radius: 999px; border: none;
+      background: transparent; color: #8a8f98; font: inherit; font-size: 0.88rem;
+      font-weight: 500; cursor: pointer; transition: all 140ms;
+    }
+    .toggle button.active { background: #f2f4f7; color: #0c0e13; }
+    .save-badge {
+      display: inline-block; margin-left: 6px; padding: 2px 7px;
+      background: rgba(125,211,184,0.16); color: #7dd3b8;
+      border-radius: 999px; font-size: 0.7rem; font-weight: 600;
+    }
+
+    .plans {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+      gap: 20px; max-width: 800px; margin: 16px auto 60px;
+      padding: 0 24px; justify-content: center;
+    }
+    .plan {
+      background: rgba(20,22,28,0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 32px 28px;
+      display: flex; flex-direction: column;
+      transition: border-color 200ms, transform 200ms;
+    }
+    .plan:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-2px); }
+    .plan.featured { border-color: rgba(154,180,255,0.35); }
+    .plan.featured::before {
+      content: "MOST POPULAR";
+      display: inline-block; align-self: flex-start;
+      background: rgba(154,180,255,0.14); color: #9ab4ff;
+      font-size: 0.66rem; font-weight: 600; letter-spacing: 0.12em;
+      padding: 4px 10px; border-radius: 999px; margin-bottom: 14px;
+    }
+    .plan-name { color: #e8eaee; font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+    .plan-tag { color: #8a8f98; font-size: 0.86rem; margin-bottom: 24px; line-height: 1.5; }
+    .plan-price {
+      font-size: 2.6rem; font-weight: 600; color: #f2f4f7;
+      letter-spacing: -0.02em; line-height: 1;
+    }
+    .plan-price .currency { font-size: 1.4rem; vertical-align: top; margin-right: 2px; color: #b4bac3; }
+    .plan-price .period { font-size: 1rem; color: #8a8f98; font-weight: 400; margin-left: 4px; }
+    .plan-billed { color: #7a808a; font-size: 0.78rem; margin: 8px 0 24px; min-height: 1.1em; }
+    .plan-cta {
+      display: block; width: 100%; padding: 12px;
+      background: #f2f4f7; color: #0c0e13; text-align: center;
+      border-radius: 10px; font-weight: 600; font-size: 0.92rem;
+      text-decoration: none; transition: background 140ms;
+      border: none; cursor: pointer; font-family: inherit;
+    }
+    .plan-cta:hover { background: #fff; }
+    .plan-cta.secondary { background: transparent; color: #e8eaee; border: 1px solid rgba(255,255,255,0.16); }
+    .plan-cta.secondary:hover { background: rgba(255,255,255,0.05); }
+    .plan-features { list-style: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .plan-features li {
+      font-size: 0.9rem; color: #b4bac3; padding: 6px 0 6px 22px;
+      position: relative; line-height: 1.5;
+    }
+    .plan-features li::before {
+      content: ""; position: absolute; left: 0; top: 11px;
+      width: 12px; height: 6px;
+      border-left: 1.5px solid #7dd3b8; border-bottom: 1.5px solid #7dd3b8;
+      transform: rotate(-45deg);
+    }
+    .plan-features li.muted { color: #6a6f78; }
+    .plan-features li.muted::before {
+      border-color: #4a4f58;
+      transform: rotate(45deg) translate(-2px, -2px);
+      width: 8px; height: 8px;
+      border-left: none; border-bottom: 1.5px solid #4a4f58; border-right: 1.5px solid #4a4f58;
+      content: "—"; color: #4a4f58; border: none; font-size: 12px; line-height: 1; transform: none; top: 8px;
+    }
+
+    .guarantee {
+      max-width: 720px; margin: 0 auto; padding: 24px;
+      text-align: center; color: #8a8f98; font-size: 0.9rem; line-height: 1.65;
+    }
+    .guarantee strong { color: #f2f4f7; font-weight: 600; }
+
+    .faq { max-width: 720px; margin: 60px auto; padding: 0 24px; }
+    .faq h2 { color: #f2f4f7; font-size: 1.3rem; font-weight: 600; margin-bottom: 24px; letter-spacing: -0.01em; }
+    .faq-item { padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .faq-q { color: #e8eaee; font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+    .faq-a { color: #9aa0a9; font-size: 0.9rem; line-height: 1.65; }
+    .faq-a a { color: #9ab4ff; text-decoration: none; }
+
+    footer {
+      text-align: center; padding: 32px;
+      font-size: 0.78rem; color: #7a808a;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 40px;
+    }
+    footer a { color: #b4bac3; text-decoration: none; margin: 0 6px; }
+    footer a:hover { color: #f2f4f7; }
+    .sep { color: #4a4f58; }
+
+    /* ── Mobile (≤640px) ─────────────────────────────────────── */
+    @media (max-width: 640px) {
+      html, body { max-width: 100%; overflow-x: hidden; }
+      header { padding: 14px 16px; gap: 8px; flex-wrap: wrap; }
+      nav { gap: 12px; }
+      nav a:not(.nav-cta) { font-size: 0.82rem; }
+      .nav-cta { padding: 7px 14px; font-size: 0.84rem; }
+
+      .hero { padding: 56px 20px 24px; }
+      h1 { font-size: 1.8rem; letter-spacing: -0.025em; }
+      .lead { font-size: 1rem; }
+
+      .toggle-wrap { padding: 18px 20px 8px; }
+      .toggle button { padding: 7px 14px; font-size: 0.82rem; }
+      .save-badge { font-size: 0.62rem; padding: 1px 6px; }
+
+      /* Plans stack to one column with proper width */
+      .plans {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        padding: 0 20px;
+        margin: 12px auto 32px;
+      }
+      .plan { padding: 24px 22px; }
+      .plan-price { font-size: 2.2rem; }
+      .plan-price .currency { font-size: 1.2rem; }
+      .plan-billed { font-size: 0.74rem; }
+
+      .guarantee { padding: 16px 20px; font-size: 0.85rem; }
+
+      .faq { margin: 36px auto; padding: 0 20px; }
+      .faq h2 { font-size: 1.15rem; }
+      .faq-q { font-size: 0.92rem; }
+      .faq-a { font-size: 0.88rem; }
+    }
+
+    /* Tiny phones */
+    @media (max-width: 380px) {
+      h1 { font-size: 1.55rem; }
+      nav a[href="/demo"] { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">BriefMe Pro</a>
+    <nav>
+      <a href="/demo">Demo</a>
+      <a href="/login">Sign in</a>
+      <a class="nav-cta" href="/register">Get started</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Simple, honest pricing.</h1>
+    <p class="lead">One product. One plan. Save 17% on annual.</p>
+  </section>
+
+  <div class="toggle-wrap">
+    <div class="toggle" role="tablist">
+      <button id="tabMonthly" class="active" onclick="setPlan('monthly')">Monthly</button>
+      <button id="tabAnnual" onclick="setPlan('annual')">Annual <span class="save-badge">Save 17%</span></button>
+    </div>
+  </div>
+
+  <section class="plans">
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-tag">Watch the world. No account needed.</div>
+      <div class="plan-price"><span class="currency">$</span>0</div>
+      <div class="plan-billed">Forever, no card needed</div>
+      <a class="plan-cta secondary" href="/demo">Open the live demo</a>
+      <ul class="plan-features">
+        <li>Read-only access to the live globe</li>
+        <li>30 source feeds, severity-scored</li>
+        <li>24-hour event history</li>
+        <li class="muted">No personalisation</li>
+        <li class="muted">No AI scenarios</li>
+        <li class="muted">No alerts</li>
+      </ul>
+    </div>
+
+    <div class="plan featured">
+      <div class="plan-name">Pro</div>
+      <div class="plan-tag">Everything. Built for daily use.</div>
+      <div class="plan-price">
+        <span class="currency">$</span><span id="priceMain">9</span><span class="period" id="pricePeriod">/ month</span>
+      </div>
+      <div class="plan-billed" id="priceBilled">Billed monthly. Cancel any time.</div>
+      <button class="plan-cta" onclick="subscribe()">Start 14-day trial</button>
+      <ul class="plan-features">
+        <li>Everything in Free</li>
+        <li>Personalised story feed (👍/👎 per event)</li>
+        <li>AI scenario panel for any region</li>
+        <li>Full 90-day event history</li>
+        <li>Predictive trend detection</li>
+        <li>Email alerts on severity thresholds</li>
+        <li>Export your data as JSON / ZIP</li>
+        <li>Priority support</li>
+      </ul>
+    </div>
+  </section>
+
+  <p class="guarantee">
+    <strong>14-day money-back guarantee</strong> on your first purchase. No questions asked.
+    Cancel anytime from Account &rarr; Subscription. Full
+    <a href="/refund" style="color:#9ab4ff;text-decoration:none;">refund policy here</a>.
+  </p>
+
+  <section class="faq">
+    <h2>Common questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">Is there a free tier?</div>
+      <div class="faq-a">Yes. The <a href="/demo">live demo</a> is read-only access to the globe and the last 24 hours of events. No signup. Pro unlocks personalisation, alerts, AI scenarios, and the full 90-day history.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Can I cancel?</div>
+      <div class="faq-a">Anytime, from Account &rarr; Subscription. You keep access until the end of the current billing period.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Do you offer student / academic discounts?</div>
+      <div class="faq-a">Yes — email <a href="mailto:billing@briefme.pro">billing@briefme.pro</a> from your .edu address with a screenshot of your student ID for 50% off.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What payment methods?</div>
+      <div class="faq-a">Stripe (cards, Apple Pay, Google Pay) globally. Razorpay (UPI, NetBanking, cards) in India.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Where does the data come from?</div>
+      <div class="faq-a">~30 open sources: Reuters, AP, BBC, Al Jazeera, GDELT, USGS earthquakes, ReliefWeb humanitarian alerts, ECDC disease surveillance, NASA EONET, ACLED conflict data, the UN press digest. We never paywall the underlying source links.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Is this a financial / legal advice service?</div>
+      <div class="faq-a">No. BriefMe Pro is informational. Don't use it for trading or safety-of-life decisions. See <a href="/terms">Terms &sect;7</a>.</div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 BriefMe Pro
+    <span class="sep">·</span><a href="/terms">Terms</a>
+    <span class="sep">·</span><a href="/privacy">Privacy</a>
+    <span class="sep">·</span><a href="/refund">Refund</a>
+  </footer>
+
+  <script>
+    let currentPlan = 'monthly';
+    function setPlan(p) {
+      currentPlan = p;
+      document.getElementById('tabMonthly').classList.toggle('active', p === 'monthly');
+      document.getElementById('tabAnnual').classList.toggle('active', p === 'annual');
+      const price = document.getElementById('priceMain');
+      const period = document.getElementById('pricePeriod');
+      const billed = document.getElementById('priceBilled');
+      if (p === 'annual') {
+        price.textContent = '7';
+        period.textContent = '/ month';
+        billed.textContent = 'Billed $89 yearly. Cancel any time.';
+      } else {
+        price.textContent = '9';
+        period.textContent = '/ month';
+        billed.textContent = 'Billed monthly. Cancel any time.';
+      }
+    }
+    function subscribe() {
+      // If signed in, jump straight to checkout; otherwise to register with the
+      // chosen plan preserved in the URL so we can resume after sign-up.
+      window.location.href = `/register?plan=${currentPlan}&next=/subscribe?plan=${currentPlan}`;
+    }
+  </script>
+</body>
+</html>

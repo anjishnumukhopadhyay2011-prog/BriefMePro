@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Live verified geopolitical event intelligence mapped to the real world. Conflict, economy, climate, and more — scored, forecast, and visualised on an interactive globe." />
+  <meta property="og:title" content="BriefMe Pro — Live Intelligence Dashboard" />
+  <meta property="og:description" content="Verified events glow where they unfold. Forecasts stay tethered to geography. Signals you can act on, every minute of every day." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BriefMe Pro" />
+  <meta name="twitter:description" content="Live geopolitical intelligence mapped to the real world." />
+  <title>BriefMe Pro</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+  <link rel="stylesheet" href="/static/styles.css?v=18" />
+  <!-- Mobile-only stylesheet: loaded by every browser but only applied on
+       screens ≤768px via media query. Desktop is untouched, mobile gets a
+       phone-native single-pane shell with bottom tab bar. -->
+  <link rel="stylesheet" href="/static/mobile.css?v=2" media="(max-width: 768px)" />
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header id="topbar">
+    <div class="brand">Brief<strong>Me</strong> <em>PRO</em></div>
+    <div id="topCenter">
+      <span class="live-dot" id="liveDot"></span>
+      <span id="eventCount">— events</span>
+      <span class="top-div">·</span>
+      <span id="topStress">stress —</span>
+      <span class="top-div">·</span>
+      <span id="topHotspot">—</span>
+    </div>
+    <div id="topRight">
+      <span id="serverBadge" class="badge">connecting</span>
+      <button id="scopeBtn" class="btn-ghost scope-toggle" title="Switch between local and global news">
+        <span class="scope-dot"></span>
+        <span id="scopeLabel">Global</span>
+      </button>
+      <button id="mapModeBtn" class="btn-ghost map-toggle" title="Toggle map / globe view">⊕ Globe</button>
+      <button id="refreshBtn" class="btn-ghost">↺ Refresh</button>
+      <a href="/account" class="user-chip" id="userChip" title="Account settings">
+        <span class="user-avatar" id="userAvatar">?</span>
+        <span class="user-name" id="userName">Account</span>
+      </a>
+      <button id="signOutBtn" class="btn-ghost">Sign out</button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE -->
+  <div id="workspace">
+
+    <!-- LEFT: News feed -->
+    <aside id="leftPanel">
+      <div class="panel-hd">
+        <span class="panel-title">LIVE INTELLIGENCE</span>
+        <input id="feedSearch" type="search" placeholder="Filter stories…" autocomplete="off" />
+      </div>
+      <div class="filter-row" id="filterRow">
+        <button class="chip active" data-cat="">All</button>
+        <button class="chip" data-cat="conflict">Conflict</button>
+        <button class="chip" data-cat="politics">Politics</button>
+        <button class="chip" data-cat="economy">Economy</button>
+        <button class="chip" data-cat="climate">Climate</button>
+        <button class="chip" data-cat="health">Health</button>
+        <button class="chip" data-cat="technology">Tech</button>
+        <button class="chip" data-cat="trade">Trade</button>
+      </div>
+      <div id="newsFeed"></div>
+    </aside>
+
+    <!-- CENTER: Globe -->
+    <main id="globeWrap">
+      <canvas id="globeCanvas"></canvas>
+      <div id="focusAnchor"></div>
+      <div id="timelineLabel"></div>
+      <!-- Floating open-panel button when right panel is closed -->
+      <button id="openPanelBtn" class="float-btn" title="Open Analysis">⚡ Analyze</button>
+    </main>
+
+    <!-- RIGHT: Analysis drawer -->
+    <aside id="rightPanel" class="panel-closed">
+      <div class="panel-hd">
+        <span class="panel-title" id="panelTitle">ANALYSIS</span>
+        <button id="closePanelBtn" class="btn-icon">✕</button>
+      </div>
+      <div id="panelBody">
+
+        <!-- Quick stats -->
+        <div id="statsBar"></div>
+
+        <!-- Event detail — shown when an event is selected -->
+        <div id="eventDetail" class="panel-section"></div>
+
+        <!-- Trends -->
+        <div id="trendsSection" class="panel-section">
+          <div class="section-label">GLOBAL TRENDS</div>
+          <div id="trendField"></div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+
+  <!-- Cookie consent banner (GDPR) -->
+  <div id="cookieBanner" class="cookie-banner" style="display:none">
+    <span class="cookie-text">We use essential cookies to keep you signed in. By continuing, you agree to our <a href="/privacy" target="_blank">Privacy Policy</a>.</span>
+    <button id="cookieAccept" class="btn-ghost cookie-accept">Got it</button>
+  </div>
+
+  <!-- Mobile bottom tab bar — only visible on phones, swaps which pane is shown -->
+  <nav id="mobileTabs" class="mobile-tabs" aria-label="Mobile navigation">
+    <button class="mtab active" data-tab="feed"  aria-label="News feed">
+      <span class="mtab-icon">📰</span><span class="mtab-label">Feed</span>
+    </button>
+    <button class="mtab"        data-tab="globe" aria-label="Globe view">
+      <span class="mtab-icon">🌍</span><span class="mtab-label">Globe</span>
+    </button>
+    <button class="mtab"        data-tab="insight" aria-label="Insights and analysis">
+      <span class="mtab-icon">⚡</span><span class="mtab-label">Insight</span>
+    </button>
+  </nav>
+
+  <!-- RSS attribution notice -->
+  <div id="attributionNotice" style="display:none"></div>
+
+  <!-- Modules must load in dependency order (each builds on the ones above) -->
+  <script src="/static/js/constants.js?v=18"></script>
+  <script src="/static/js/state.js?v=18"></script>
+  <script src="/static/js/country.js?v=2"></script>
+  <script src="/static/js/utils.js?v=18"></script>
+  <script src="/static/js/api.js?v=18"></script>
+  <script src="/static/js/data.js?v=18"></script>
+  <script src="/static/js/globe.js?v=18"></script>
+  <script src="/static/js/feed.js?v=18"></script>
+  <script src="/static/js/ui.js?v=18"></script>
+</body>
+</html>

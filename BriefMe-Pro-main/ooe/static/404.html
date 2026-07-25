@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>404 — Page Not Found · BriefMe Pro</title>
+  <style>
+    /* dark void, centered card */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #060e16; color: #c8d8e8; font-family: 'Helvetica Neue', Arial, sans-serif;
+           display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { text-align: center; padding: 48px 32px; max-width: 480px; }
+    .code { font-size: 7rem; font-weight: 900; line-height: 1;
+            background: linear-gradient(135deg, #00d4e8, #00c87a); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-clip: text; }
+    h1 { font-size: 1.4rem; font-weight: 700; color: #e8f4ff; margin: 16px 0 10px; }
+    p { font-size: 0.88rem; color: #6a8090; line-height: 1.6; margin-bottom: 28px; }
+    a.btn { display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #00d4e8, #00c87a);
+            color: #040c14; font-weight: 700; border-radius: 10px; text-decoration: none; font-size: 0.88rem; }
+    a.ghost { display: inline-block; margin-left: 12px; padding: 12px 24px;
+              border: 1px solid #1a2a3a; border-radius: 10px; color: #8aa0b4;
+              text-decoration: none; font-size: 0.88rem; transition: background 140ms; }
+    a.ghost:hover { background: rgba(255,255,255,0.04); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="code">404</div>
+    <h1>Page not found</h1>
+    <p>The page you're looking for doesn't exist or has been moved.<br>Head back to the dashboard or sign in.</p>
+    <a class="btn" href="/">Back to dashboard</a>
+    <a class="ghost" href="/login">Sign in</a>
+  </div>
+</body>
+</html>

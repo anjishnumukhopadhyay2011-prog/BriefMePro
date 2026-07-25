@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin · BriefMe Pro</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #07080b; color: #b4bac3;
+      font-family: -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased; min-height: 100vh;
+    }
+    header {
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 16px 32px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { color: #f2f4f7; font-weight: 600; font-size: 1rem; text-decoration: none; }
+    .brand .tag { color: #e06b74; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; margin-left: 10px; padding: 2px 8px; border: 1px solid rgba(224,107,116,0.4); border-radius: 999px; }
+    nav a { color: #8a8f98; text-decoration: none; font-size: 0.86rem; margin-left: 18px; }
+    nav a:hover { color: #f2f4f7; }
+    main { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
+    h1 { color: #f2f4f7; font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .updated { color: #7a808a; font-size: 0.82rem; margin-bottom: 32px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 32px; }
+    .card {
+      background: rgba(20,22,28,0.7); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 18px 20px;
+    }
+    .card .label { color: #7a808a; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .card .value { color: #f2f4f7; font-size: 2.1rem; font-weight: 600; letter-spacing: -0.02em; margin-top: 8px; line-height: 1; }
+    .card .delta { color: #9ab4ff; font-size: 0.78rem; margin-top: 6px; }
+    .card .delta.warn { color: #e8b776; }
+    .card .delta.bad { color: #e06b74; }
+    h2 { color: #e8eaee; font-size: 1.05rem; font-weight: 600; margin: 32px 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: rgba(20,22,28,0.5); border-radius: 12px; overflow: hidden; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    th { background: rgba(255,255,255,0.03); color: #8a8f98; font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
+    td { color: #b4bac3; }
+    .pill { display: inline-block; padding: 2px 9px; font-size: 0.72rem; font-weight: 600; border-radius: 999px; }
+    .pill.ok { background: rgba(125,211,184,0.15); color: #7dd3b8; }
+    .pill.no { background: rgba(224,107,116,0.15); color: #e06b74; }
+    .empty { color: #6a6f78; padding: 24px; text-align: center; font-size: 0.88rem; }
+    button { background: rgba(255,255,255,0.05); color: #e8eaee; border: 1px solid rgba(255,255,255,0.12); padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 0.84rem; cursor: pointer; transition: background 140ms; }
+    button:hover { background: rgba(255,255,255,0.1); }
+
+    @media (max-width: 640px) {
+      html, body { max-width: 100%; overflow-x: hidden; }
+      header { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+      nav { gap: 12px; flex-wrap: wrap; }
+      nav a { margin-left: 0; font-size: 0.82rem; }
+      main { margin: 24px auto; padding: 0 16px; }
+      h1 { font-size: 1.3rem; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .card { padding: 14px 16px; }
+      .card .value { font-size: 1.6rem; }
+      table { font-size: 0.82rem; }
+      th, td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">BriefMe Pro <span class="tag">ADMIN</span></a>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/account">Account</a>
+      <button onclick="loadStats()">Refresh</button>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Operational overview</h1>
+    <p class="updated" id="updated">Loading…</p>
+
+    <div class="grid" id="grid"></div>
+
+    <h2>Recent signups</h2>
+    <div id="signups"></div>
+  </main>
+
+  <script>
+    async function loadStats() {
+      document.getElementById('updated').textContent = 'Loading…';
+      try {
+        const r = await fetch('/api/admin/stats', { credentials: 'include' });
+        if (r.status === 403) {
+          document.body.innerHTML = '<div style="padding:80px;text-align:center;color:#e06b74;font-family:-apple-system,sans-serif"><h1>403 Forbidden</h1><p>Sign in with an admin account.</p><p><a href="/login" style="color:#9ab4ff">Go to login</a></p></div>';
+          return;
+        }
+        const raw = await r.text();
+        let s = {};
+        try { s = JSON.parse(raw); } catch (_) {}
+        if (!r.ok || !s || !s.users) {
+          document.getElementById('updated').innerHTML =
+            '<div style="background:rgba(224,107,116,0.12);border:1px solid rgba(224,107,116,0.4);' +
+            'color:#ff9da3;padding:12px 16px;border-radius:10px">' +
+            'Server error ' + r.status + (s.error ? (': ' + s.error) : '') +
+            '. Check Railway deploy logs for the traceback.</div>';
+          return;
+        }
+
+        // Critical warning banner: data is on ephemeral storage and will be
+        // lost on every container restart until a Volume is attached.
+        const updated = document.getElementById('updated');
+        if (s.storage && s.storage.ephemeral) {
+          updated.innerHTML = (
+            '<div style="background:rgba(224,107,116,0.12);border:1px solid rgba(224,107,116,0.4);' +
+            'color:#ff9da3;padding:12px 16px;border-radius:10px;font-size:0.88rem;line-height:1.5;margin-bottom:18px">' +
+            '<strong style="color:#ffb8bd">⚠ Data is not persistent.</strong> ' +
+            'DB is at <code>' + s.storage.db_path + '</code> (ephemeral). ' +
+            'Every container restart wipes user accounts, 2FA, and sessions. ' +
+            'Fix: attach a Railway Volume mounted at <code>' + s.storage.requested_path.replace(/\/[^\/]+$/, '') + '</code> ' +
+            'and ensure DB_PATH points inside it.' +
+            '</div>' +
+            '<div>Updated ' + new Date().toLocaleString() + '</div>'
+          );
+        } else {
+          updated.textContent = 'Updated ' + new Date().toLocaleString();
+        }
+
+        const grid = document.getElementById('grid');
+        const failedLogins = (s.security && s.security.failed_logins_24h) || 0;
+        grid.innerHTML = `
+          <div class="card"><div class="label">Total users</div><div class="value">${s.users.total}</div><div class="delta">${s.users.verified} verified</div></div>
+          <div class="card"><div class="label">New (24h)</div><div class="value">${s.users.new_24h}</div><div class="delta">${s.users.new_7d} in last 7d</div></div>
+          <div class="card"><div class="label">Active subs</div><div class="value">${s.subscriptions.active}</div><div class="delta ${s.subscriptions.past_due > 0 ? 'warn' : ''}">${s.subscriptions.past_due} past due</div></div>
+          <div class="card"><div class="label">Events stored</div><div class="value">${s.events.total.toLocaleString()}</div><div class="delta">${s.events.new_24h} ingested today</div></div>
+          <div class="card"><div class="label">Interactions (24h)</div><div class="value">${s.interactions_24h}</div><div class="delta">user feedback</div></div>
+          <div class="card"><div class="label">Failed logins (24h)</div><div class="value">${failedLogins}</div><div class="delta ${failedLogins > 20 ? 'bad' : (failedLogins > 5 ? 'warn' : '')}">${failedLogins > 20 ? 'investigate' : 'normal'}</div></div>
+        `;
+
+        // Security audit log
+        const sec = s.security && s.security.recent_events || [];
+        let secHtml = '<h2>Recent security events</h2>';
+        if (!sec.length) {
+          secHtml += '<div class="empty">No security events yet.</div>';
+        } else {
+          secHtml += '<table><tr><th>When</th><th>Type</th><th>IP</th><th>Detail</th></tr>';
+          for (const e of sec) {
+            const colour = e.event_type.includes('failed') ? 'pill no' : 'pill ok';
+            secHtml += `<tr><td>${e.created_at}</td><td><span class="${colour}">${e.event_type}</span></td><td>${e.ip_address || '—'}</td><td>${e.detail || ''}</td></tr>`;
+          }
+          secHtml += '</table>';
+        }
+        let signupsEl = document.getElementById('signups');
+        // Insert security panel BEFORE recent signups
+        let secPanel = document.getElementById('secPanel');
+        if (!secPanel) {
+          secPanel = document.createElement('div');
+          secPanel.id = 'secPanel';
+          signupsEl.parentNode.insertBefore(secPanel, signupsEl);
+        }
+        secPanel.innerHTML = secHtml;
+
+        const signups = document.getElementById('signups');
+        if (!s.recent_signups.length) {
+          signups.innerHTML = '<div class="empty">No signups yet.</div>';
+        } else {
+          let html = '<table><tr><th>Email</th><th>Joined</th><th>Verified</th></tr>';
+          for (const u of s.recent_signups) {
+            const verified = u.email_verified
+              ? '<span class="pill ok">YES</span>'
+              : '<span class="pill no">PENDING</span>';
+            html += `<tr><td>${u.email}</td><td>${u.created_at}</td><td>${verified}</td></tr>`;
+          }
+          html += '</table>';
+          signups.innerHTML = html;
+        }
+      } catch (err) {
+        document.getElementById('updated').textContent = 'Failed to load: ' + err;
+      }
+    }
+    loadStats();
+    setInterval(loadStats, 60000); // auto-refresh every minute
+  </script>
+</body>
+</html>

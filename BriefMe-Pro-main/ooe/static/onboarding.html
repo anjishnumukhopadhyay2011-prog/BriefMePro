@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BriefMe Pro — Set Up Your Feed</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+  <link rel="stylesheet" href="/static/auth.css" />
+  <style>
+    .ob-wrap { max-width: 620px; margin: 0 auto; padding: 40px 20px 80px; }
+    .ob-header { text-align: center; margin-bottom: 40px; }
+    .ob-logo { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .ob-title { font-size: 1.6rem; font-weight: 700; color: var(--text); margin: 0 0 10px; }
+    .ob-subtitle { font-size: 0.9rem; color: var(--text-sub); line-height: 1.6; }
+    .ob-step { margin-bottom: 36px; }
+    .ob-step-label { font-size: 0.70rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .ob-step-title { font-size: 1.0rem; font-weight: 700; color: var(--text); margin: 0 0 16px; }
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ob-chip {
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      transition: all 140ms;
+      user-select: none;
+    }
+    .ob-chip:hover { border-color: var(--accent); color: var(--text); background: rgba(103,233,255,0.06); }
+    .ob-chip.selected { border-color: var(--accent); color: var(--accent); background: rgba(103,233,255,0.12); }
+    .ob-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 36px; }
+    .ob-skip { background: none; border: none; color: var(--muted); font-size: 0.85rem; cursor: pointer; padding: 12px; }
+    .ob-skip:hover { color: var(--text-sub); }
+    .btn-primary { padding: 12px 28px; background: var(--accent); color: #040c14; font-weight: 700; border: none; border-radius: 10px; font-size: 0.88rem; cursor: pointer; transition: opacity 140ms; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.4; cursor: default; }
+    .ob-progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 36px; }
+    .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: background 200ms; }
+    .ob-dot.active { background: var(--accent); }
+    .ob-error { color: #ff6b6b; font-size: 0.82rem; margin-top: 8px; display: none; }
+  </style>
+</head>
+<body>
+<div class="auth-bg"></div>
+<div class="ob-wrap">
+
+  <div class="ob-header">
+    <div class="ob-logo">BriefMe Pro</div>
+    <h1 class="ob-title">Set up your intelligence feed</h1>
+    <p class="ob-subtitle">Tell us what matters to you. Your feed will be personalised from day one — you can always change this later in Account settings.</p>
+  </div>
+
+  <div class="ob-progress">
+    <div class="ob-dot active" id="dot0"></div>
+    <div class="ob-dot" id="dot1"></div>
+  </div>
+
+  <!-- Step 1: Topics -->
+  <div id="step0" class="ob-step">
+    <div class="ob-step-label">Step 1 of 2</div>
+    <div class="ob-step-title">Which topics do you follow?</div>
+    <div class="chip-grid" id="topicGrid">
+      <div class="ob-chip" data-val="conflict">⚔️ Conflict &amp; War</div>
+      <div class="ob-chip" data-val="politics">🏛️ Politics</div>
+      <div class="ob-chip" data-val="economy">📈 Economy &amp; Markets</div>
+      <div class="ob-chip" data-val="technology">💻 Technology</div>
+      <div class="ob-chip" data-val="climate">🌍 Climate &amp; Environment</div>
+      <div class="ob-chip" data-val="health">🏥 Health &amp; Pandemic</div>
+      <div class="ob-chip" data-val="trade">🚢 Trade &amp; Supply Chains</div>
+      <div class="ob-chip" data-val="disaster">🌋 Natural Disasters</div>
+      <div class="ob-chip" data-val="crime">🔍 Crime &amp; Security</div>
+      <div class="ob-chip" data-val="social">🤝 Social Issues</div>
+    </div>
+    <div class="ob-actions">
+      <button class="ob-skip" id="skipStep0">Skip this step →</button>
+      <button class="btn-primary" id="nextStep0">Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Regions -->
+  <div id="step1" class="ob-step" style="display:none">
+    <div class="ob-step-label">Step 2 of 2</div>
+    <div class="ob-step-title">Which regions matter most to you?</div>
+    <div class="chip-grid" id="regionGrid">
+      <div class="ob-chip" data-val="United States">🇺🇸 United States</div>
+      <div class="ob-chip" data-val="Europe">🇪🇺 Europe</div>
+      <div class="ob-chip" data-val="Middle East">🕌 Middle East</div>
+      <div class="ob-chip" data-val="China">🇨🇳 China</div>
+      <div class="ob-chip" data-val="Russia">🇷🇺 Russia</div>
+      <div class="ob-chip" data-val="India">🇮🇳 India</div>
+      <div class="ob-chip" data-val="Africa">🌍 Africa</div>
+      <div class="ob-chip" data-val="Southeast Asia">🌏 Southeast Asia</div>
+      <div class="ob-chip" data-val="Latin America">🌎 Latin America</div>
+      <div class="ob-chip" data-val="United Kingdom">🇬🇧 United Kingdom</div>
+    </div>
+    <p class="ob-error" id="obError">Something went wrong. Trying to continue anyway…</p>
+    <div class="ob-actions">
+      <button class="ob-skip" id="skipFinal">Skip &amp; go to dashboard →</button>
+      <button class="btn-primary" id="finishBtn">Start using BriefMe Pro →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const selectedTopics  = new Set();
+  const selectedRegions = new Set();
+
+  function toggleChip(grid, set, val, el) {
+    if (set.has(val)) { set.delete(val); el.classList.remove("selected"); }
+    else              { set.add(val);    el.classList.add("selected"); }
+  }
+
+  document.getElementById("topicGrid").addEventListener("click", e => {
+    const chip = e.target.closest(".ob-chip");
+    if (!chip) return;
+    toggleChip("topicGrid", selectedTopics, chip.dataset.val, chip);
+  });
+
+  document.getElementById("regionGrid").addEventListener("click", e => {
+    const chip = e.target.closest(".ob-chip");
+    if (!chip) return;
+    toggleChip("regionGrid", selectedRegions, chip.dataset.val, chip);
+  });
+
+  function showStep(n) {
+    document.getElementById("step0").style.display = n === 0 ? "" : "none";
+    document.getElementById("step1").style.display = n === 1 ? "" : "none";
+    document.getElementById("dot0").classList.toggle("active", n === 0);
+    document.getElementById("dot1").classList.toggle("active", n === 1);
+  }
+
+  document.getElementById("nextStep0").addEventListener("click", () => showStep(1));
+  document.getElementById("skipStep0").addEventListener("click", () => showStep(1));
+
+  async function finish() {
+    const btn = document.getElementById("finishBtn");
+    btn.disabled = true;
+    btn.textContent = "Saving…";
+    try {
+      const resp = await fetch("/api/auth/onboarded", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          categories: [...selectedTopics],
+          regions:    [...selectedRegions],
+        }),
+      });
+      if (!resp.ok) throw new Error("server error");
+    } catch (err) {
+      document.getElementById("obError").style.display = "block";
+    } finally {
+      window.location.href = "/";
+    }
+  }
+
+  document.getElementById("finishBtn").addEventListener("click", finish);
+  document.getElementById("skipFinal").addEventListener("click", async () => {
+    try {
+      await fetch("/api/auth/onboarded", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categories: [], regions: [] }),
+      });
+    } catch (_) {}
+    window.location.href = "/";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BriefMe Pro — Account Settings</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+  <link rel="stylesheet" href="/static/auth.css" />
+  <style>
+    /* ── Layout ── */
+    .settings-shell {
+      position: relative; z-index: 1;
+      display: flex; min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .settings-sidebar {
+      width: 240px; flex-shrink: 0;
+      border-right: 1px solid var(--line);
+      background: rgba(4,10,18,0.60);
+      backdrop-filter: blur(16px);
+      display: flex; flex-direction: column;
+      padding: 28px 16px;
+      position: sticky; top: 0; height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sb-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 8px; margin-bottom: 32px;
+      text-decoration: none;
+    }
+    .sb-brand-dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid var(--accent); position: relative;
+      flex-shrink: 0; animation: brandSpin 8s linear infinite;
+    }
+    .sb-brand-dot::before {
+      content: ''; position: absolute; inset: 4px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent), var(--teal));
+    }
+    .sb-brand-name {
+      font-size: 0.80rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--accent);
+    }
+
+    .sb-section-label {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 0 12px; margin: 20px 0 6px;
+    }
+    .sb-section-label:first-of-type { margin-top: 0; }
+
+    .sb-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 500;
+      color: var(--text-sub); text-decoration: none;
+      cursor: pointer; border: none; background: none;
+      width: 100%; text-align: left;
+      transition: background 140ms, color 140ms;
+    }
+    .sb-link:hover { background: rgba(103,233,255,0.06); color: var(--text); }
+    .sb-link.active { background: rgba(103,233,255,0.10); color: var(--accent); }
+    .sb-link svg { opacity: 0.55; flex-shrink: 0; transition: opacity 140ms; }
+    .sb-link.active svg, .sb-link:hover svg { opacity: 1; }
+
+    .sb-sep { height: 1px; background: var(--line); margin: 10px 4px; }
+
+    .sb-user {
+      margin-top: auto; padding: 14px 12px;
+      border: 1px solid var(--line); border-radius: 12px;
+      background: rgba(6,14,22,0.7);
+    }
+    .sb-user-name { font-size: 0.83rem; font-weight: 600; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sb-user-email { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Main panel ── */
+    .settings-main {
+      flex: 1; padding: 40px 36px;
+      max-width: 600px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 700px) {
+      .settings-sidebar { display: none; }
+      .settings-main { padding: 24px 16px; max-width: 100%; }
+    }
+
+    /* ── Section management ── */
+    .settings-section { display: none; }
+    .settings-section.active { display: block; }
+
+    /* ── Section header ── */
+    .sec-hd { margin-bottom: 28px; }
+    .sec-title {
+      font-size: 1.45rem; font-weight: 700; color: var(--text);
+      letter-spacing: -0.01em; margin-bottom: 5px;
+    }
+    .sec-sub { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; }
+
+    /* ── Cards ── */
+    .set-card {
+      background: rgba(6,14,22,0.80);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .set-card-hd {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(103,233,255,0.02);
+    }
+    .set-card-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: rgba(103,233,255,0.08);
+      border: 1px solid rgba(103,233,255,0.16);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .set-card-icon svg { color: var(--accent); }
+    .set-card-title { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .set-card-desc  { font-size: 0.74rem; color: var(--text-sub); margin-top: 1px; }
+    .set-card-body  { padding: 22px; }
+
+    /* ── Info rows ── */
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+    }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row:first-child { padding-top: 0; }
+    .info-label { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; min-width: 110px; }
+    .info-value { font-size: 0.84rem; color: var(--text); font-weight: 500; text-align: right; word-break: break-all; }
+
+    /* ── Form ── */
+    .set-field { margin-bottom: 18px; }
+    .set-field:last-child { margin-bottom: 0; }
+    .set-label {
+      display: block; font-size: 0.70rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 7px;
+      transition: color 140ms;
+    }
+    .set-field:focus-within .set-label { color: var(--accent); }
+    .set-input {
+      width: 100%; background: var(--bg-input);
+      border: 1px solid var(--line); border-radius: var(--radius-input);
+      padding: 12px 15px; color: var(--text);
+      font: inherit; font-size: 0.92rem; outline: none;
+      transition: border-color 140ms, box-shadow 140ms;
+    }
+    .set-input::placeholder { color: var(--muted); }
+    .set-input:focus {
+      border-color: rgba(103,233,255,0.48);
+      box-shadow: 0 0 0 3px rgba(103,233,255,0.09);
+    }
+
+    /* ── Buttons ── */
+    .btn-save {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 11px 22px; border-radius: 10px;
+      background: var(--accent); color: #020c14;
+      font: inherit; font-size: 0.86rem; font-weight: 700;
+      border: none; cursor: pointer;
+      transition: opacity 140ms, transform 80ms;
+    }
+    .btn-save:hover { opacity: 0.88; }
+    .btn-save:active { transform: scale(0.98); }
+    .btn-save:disabled { opacity: 0.40; cursor: not-allowed; }
+    .btn-save.full { width: 100%; }
+
+    .btn-ghost-set {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 11px 22px; border-radius: 10px;
+      background: transparent; color: var(--text-sub);
+      font: inherit; font-size: 0.86rem; font-weight: 600;
+      border: 1px solid var(--line); cursor: pointer;
+      transition: background 140ms, color 140ms;
+    }
+    .btn-ghost-set:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .btn-ghost-set:disabled { opacity: 0.40; cursor: not-allowed; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+    /* ── Subscription badge ── */
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .plan-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .plan-badge.active   { background: rgba(61,245,192,0.10); color: #3df5c0; border: 1px solid rgba(61,245,192,0.25); }
+    .plan-badge.inactive { background: rgba(255,95,110,0.10);  color: #ff5f6e; border: 1px solid rgba(255,95,110,0.22); }
+    .plan-badge.warning  { background: rgba(255,188,99,0.10);  color: var(--amber); border: 1px solid rgba(255,188,99,0.24); }
+
+    /* ── Danger zone ── */
+    .danger-zone {
+      border: 1px solid rgba(255,95,110,0.20);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .danger-zone-hd {
+      padding: 16px 22px;
+      border-bottom: 1px solid rgba(255,95,110,0.14);
+      background: rgba(255,95,110,0.04);
+    }
+    .danger-zone-title {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.10em; text-transform: uppercase;
+      color: var(--danger);
+    }
+    .danger-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 18px 22px; border-bottom: 1px solid rgba(255,95,110,0.08);
+    }
+    .danger-row:last-child { border-bottom: none; }
+    .danger-row-info p { font-size: 0.83rem; font-weight: 600; color: var(--text); margin: 0 0 3px; }
+    .danger-row-info span { font-size: 0.74rem; color: var(--text-sub); line-height: 1.45; }
+    .btn-danger {
+      flex-shrink: 0; padding: 9px 18px;
+      background: transparent; color: var(--danger);
+      border: 1px solid rgba(255,95,110,0.30);
+      border-radius: 9px; font: inherit;
+      font-size: 0.80rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      transition: background 140ms;
+    }
+    .btn-danger:hover { background: rgba(255,95,110,0.08); }
+    .btn-danger:disabled { opacity: 0.40; cursor: not-allowed; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px);
+      padding: 12px 22px; border-radius: 12px;
+      font-size: 0.85rem; font-weight: 600;
+      opacity: 0; pointer-events: none;
+      transition: opacity 220ms, transform 220ms;
+      z-index: 99; white-space: nowrap;
+      backdrop-filter: blur(16px);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: rgba(61,245,192,0.14); color: #3df5c0; border: 1px solid rgba(61,245,192,0.28); }
+    #toast.error   { background: rgba(255,95,110,0.14); color: #ff8a96; border: 1px solid rgba(255,95,110,0.28); }
+
+    /* ── Days ring ── */
+    .days-ring {
+      display: inline-flex; align-items: baseline; gap: 4px;
+      font-size: 1.5rem; font-weight: 700; color: var(--accent);
+    }
+    .days-ring span { font-size: 0.78rem; font-weight: 500; color: var(--text-sub); }
+  </style>
+</head>
+<body>
+
+<div class="auth-bg"><canvas id="authParticles"></canvas></div>
+
+<div id="toast"></div>
+
+<div class="settings-shell">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="settings-sidebar">
+
+    <a href="/" class="sb-brand">
+      <div class="sb-brand-dot"></div>
+      <span class="sb-brand-name">BriefMe Pro</span>
+    </a>
+
+    <div class="sb-section-label">Settings</div>
+
+    <button class="sb-link active" data-tab="profile">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Profile
+    </button>
+
+    <button class="sb-link" data-tab="security">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Security
+    </button>
+
+    <button class="sb-link" data-tab="subscription">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Subscription
+    </button>
+
+    <button class="sb-link" data-tab="danger">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Danger zone
+    </button>
+
+    <div class="sb-sep"></div>
+
+    <a href="/" class="sb-link">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to dashboard
+    </a>
+
+    <button class="sb-link" id="sbSignOut">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign out
+    </button>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-user">
+      <div class="sb-user-name" id="sbUserName">—</div>
+      <div class="sb-user-email" id="sbUserEmail">—</div>
+    </div>
+
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main class="settings-main">
+
+    <!-- ── PROFILE ── -->
+    <div class="settings-section active" id="tab-profile">
+      <div class="sec-hd">
+        <div class="sec-title">Profile</div>
+        <div class="sec-sub">Manage how you appear in BriefMe Pro.</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-hd">
+          <div class="set-card-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div>
+            <div class="set-card-title">Account details</div>
+            <div class="set-card-desc">Your registered email and join date</div>
+          </div>
+        </div>
+        <div class="set-card-body">
+          <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value" id="infoEmail">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Member since</span>
+            <span class="info-value" id="infoCreated">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Last sign-in</span>
+            <span class="info-value" id="infoLastLogin">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-hd">
+          <div class="set-card-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          </div>
+          <div>
+            <div class="set-card-title">Display name</div>
+            <div class="set-card-desc">Shown in your dashboard header</div>
+          </div>
+        </div>
+        <div class="set-card-body">
+          <div class="set-field">
+            <label class="set-label" for="inputName">Name</label>
+            <input class="set-input" type="text" id="inputName" placeholder="Your full name" autocomplete="name" />
+          </div>
+          <div class="btn-row">
+            <button class="btn-save" id="saveNameBtn">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECURITY ── -->
+    <div class="settings-section" id="tab-security">
+      <div class="sec-hd">
+        <div class="sec-title">Security</div>
+        <div class="sec-sub">Update your password and protect your account.</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-hd">
+          <div class="set-card-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div>
+            <div class="set-card-title">Change password</div>
+            <div class="set-card-desc">Must be at least 8 characters</div>
+          </div>
+        </div>
+        <div class="set-card-body">
+          <div class="set-field">
+            <label class="set-label" for="inputCurrentPw">Current password</label>
+            <input class="set-input" type="password" id="inputCurrentPw" placeholder="Enter your current password" autocomplete="current-password" />
+          </div>
+          <div class="set-field">
+            <label class="set-label" for="inputNewPw">New password</label>
+            <input class="set-input" type="password" id="inputNewPw" placeholder="At least 8 characters" autocomplete="new-password" />
+          </div>
+          <div class="set-field">
+            <label class="set-label" for="inputConfirmPw">Confirm new password</label>
+            <input class="set-input" type="password" id="inputConfirmPw" placeholder="Repeat new password" autocomplete="new-password" />
+          </div>
+          <div class="btn-row">
+            <button class="btn-save" id="savePasswordBtn">Update password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- ── SUBSCRIPTION ── -->
+    <div class="settings-section" id="tab-subscription">
+      <div class="sec-hd">
+        <div class="sec-title">Subscription</div>
+        <div class="sec-sub">Your current plan, billing cycle, and renewal details.</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-hd">
+          <div class="set-card-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div>
+            <div class="set-card-title">Plan &amp; billing</div>
+            <div class="set-card-desc">Live intelligence, unrestricted</div>
+          </div>
+        </div>
+        <div class="set-card-body">
+          <div class="info-row">
+            <span class="info-label">Status</span>
+            <span class="info-value"><span class="plan-badge inactive" id="subBadge">Inactive</span></span>
+          </div>
+          <div class="info-row" id="subPlanRow" style="display:none">
+            <span class="info-label">Plan</span>
+            <span class="info-value" id="subPlan">—</span>
+          </div>
+          <div class="info-row" id="subExpiryRow" style="display:none">
+            <span class="info-label">Renews</span>
+            <span class="info-value" id="subExpiry">—</span>
+          </div>
+          <div class="info-row" id="subDaysRow" style="display:none">
+            <span class="info-label">Time left</span>
+            <span class="info-value">
+              <span class="days-ring"><span id="subDaysNum">—</span> <span>days</span></span>
+            </span>
+          </div>
+
+          <div class="btn-row" id="subActions">
+            <button class="btn-save" id="manageSubBtn" style="display:none">Manage billing</button>
+            <a href="/subscribe" class="btn-save" id="activateSubBtn">Activate subscription</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DANGER ZONE ── -->
+    <div class="settings-section" id="tab-danger">
+      <div class="sec-hd">
+        <div class="sec-title">Danger zone</div>
+        <div class="sec-sub">Irreversible actions. Proceed with care.</div>
+      </div>
+
+      <div class="danger-zone">
+        <div class="danger-zone-hd">
+          <div class="danger-zone-title">Session &amp; access</div>
+        </div>
+
+        <div class="danger-row">
+          <div class="danger-row-info">
+            <p>Export your data</p>
+            <span>Download a JSON file of your account, subscription, and session data (GDPR data portability).</span>
+          </div>
+          <button class="btn-ghost-set" id="exportDataBtn" style="flex-shrink:0;">Export JSON</button>
+        </div>
+
+        <div class="danger-row">
+          <div class="danger-row-info">
+            <p>Delete account</p>
+            <span>Permanently removes your account and anonymises all personal data. This cannot be undone.</span>
+          </div>
+          <button class="btn-danger" id="deleteAccountBtn">Delete account</button>
+        </div>
+
+        <div class="danger-row">
+          <div class="danger-row-info">
+            <p>Sign out of all devices</p>
+            <span>Revokes all active sessions. You'll need to sign in again on every device.</span>
+          </div>
+          <button class="btn-danger" id="revokeAllBtn">Sign out all</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/static/auth.js"></script>
+<script>
+"use strict";
+
+initParticles("authParticles");
+
+/* ── Toast ── */
+let toastTimer = null;
+function toast(msg, type = "success") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "show " + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ""; }, 3500);
+}
+
+/* ── Tab navigation ── */
+document.querySelectorAll(".sb-link[data-tab]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    // Deactivate all
+    document.querySelectorAll(".sb-link[data-tab]").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".settings-section").forEach(s => s.classList.remove("active"));
+    // Activate target
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab)?.classList.add("active");
+  });
+});
+
+/* ── Sign out ── */
+document.getElementById("sbSignOut").addEventListener("click", async () => {
+  const btn = document.getElementById("sbSignOut");
+  btn.disabled = true;
+  try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); } catch (_) {}
+  window.location.href = "/login";
+});
+
+/* ── Helpers ── */
+function fmtDate(iso) {
+  if (!iso) return "—";
+  try { return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); }
+  catch (_) { return iso; }
+}
+function daysUntil(iso) {
+  if (!iso) return null;
+  try { return Math.max(0, Math.ceil((new Date(iso) - Date.now()) / 86400000)); }
+  catch (_) { return null; }
+}
+function setBusy(btn, label) { btn.disabled = true; btn.dataset.orig = btn.textContent; btn.textContent = label; }
+function setIdle(btn) { btn.disabled = false; btn.textContent = btn.dataset.orig || "Save"; }
+
+/* ── Load account ── */
+async function loadAccount() {
+  try {
+    const res = await fetch("/api/auth/me", { credentials: "same-origin" });
+    if (res.status === 401) { window.location.href = "/login"; return; }
+    const data = await res.json().catch(() => ({}));
+
+    const name = data.display_name || "";
+    const email = data.email || "";
+
+    document.getElementById("sbUserName").textContent    = name || email.split("@")[0] || "—";
+    document.getElementById("sbUserEmail").textContent   = email;
+    document.getElementById("infoEmail").textContent     = email || "—";
+    document.getElementById("infoCreated").textContent   = fmtDate(data.created_at);
+    document.getElementById("infoLastLogin").textContent = data.last_login_at ? fmtDate(data.last_login_at) : "Current session";
+    document.getElementById("inputName").value           = name;
+
+    const sub    = data.subscription || {};
+    const status = sub.subscription_status || "inactive";
+    const badge  = document.getElementById("subBadge");
+
+    if (status === "active") {
+      badge.className   = "plan-badge active";
+      badge.textContent = "Active";
+
+      document.getElementById("subPlanRow").style.display   = "";
+      document.getElementById("subExpiryRow").style.display = "";
+      document.getElementById("subPlan").textContent = capitalize(sub.plan || "pro");
+      document.getElementById("subExpiry").textContent = fmtDate(sub.subscription_expires_at);
+
+      const days = daysUntil(sub.subscription_expires_at);
+      if (days !== null) {
+        document.getElementById("subDaysRow").style.display = "";
+        document.getElementById("subDaysNum").textContent   = days;
+        if (days <= 7) { badge.className = "plan-badge warning"; badge.textContent = "Expiring soon"; }
+      }
+
+      document.getElementById("activateSubBtn").style.display = "none";
+      document.getElementById("manageSubBtn").style.display   = "block";
+    }
+  } catch (_) {
+    toast("Could not load account data. Please refresh.", "error");
+  }
+}
+
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
+
+/* ── Save display name ── */
+document.getElementById("saveNameBtn").addEventListener("click", async () => {
+  const btn  = document.getElementById("saveNameBtn");
+  const name = document.getElementById("inputName").value.trim();
+  if (!name) { toast("Name cannot be empty.", "error"); return; }
+  setBusy(btn, "Saving…");
+  try {
+    const res  = await fetch("/api/auth/update-profile", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ display_name: name }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      toast("Name updated successfully.");
+      document.getElementById("sbUserName").textContent = name;
+    } else {
+      toast(data.error || "Failed to save name.", "error");
+    }
+  } catch (_) { toast("Network error — please try again.", "error"); }
+  finally { setIdle(btn); }
+});
+
+/* ── Change password ── */
+document.getElementById("savePasswordBtn").addEventListener("click", async () => {
+  const btn     = document.getElementById("savePasswordBtn");
+  const current = document.getElementById("inputCurrentPw").value;
+  const newPw   = document.getElementById("inputNewPw").value;
+  const confirm = document.getElementById("inputConfirmPw").value;
+
+  if (!current || !newPw || !confirm) { toast("All three fields are required.", "error"); return; }
+  if (newPw.length < 8)              { toast("New password must be at least 8 characters.", "error"); return; }
+  if (newPw !== confirm)             { toast("New passwords don't match.", "error"); return; }
+
+  setBusy(btn, "Updating…");
+  try {
+    const res  = await fetch("/api/auth/change-password", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current_password: current, new_password: newPw }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      toast("Password updated successfully.");
+      document.getElementById("inputCurrentPw").value = "";
+      document.getElementById("inputNewPw").value     = "";
+      document.getElementById("inputConfirmPw").value = "";
+    } else {
+      toast(data.error || "Failed to update password.", "error");
+    }
+  } catch (_) { toast("Network error — please try again.", "error"); }
+  finally { setIdle(btn); }
+});
+
+/* ── Manage billing ── */
+document.getElementById("manageSubBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("manageSubBtn");
+  setBusy(btn, "Opening…");
+  try {
+    const res  = await fetch("/api/auth/create-portal", { method: "POST", credentials: "same-origin" });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.url) { window.location.href = data.url; return; }
+    toast(data.error || "Could not open billing portal.", "error");
+  } catch (_) { toast("Network error — please try again.", "error"); }
+  finally { setIdle(btn); }
+});
+
+/* ── Sign out all ── */
+document.getElementById("revokeAllBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("revokeAllBtn");
+  setBusy(btn, "Signing out…");
+  try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); } catch (_) {}
+  window.location.href = "/login";
+});
+
+loadAccount();
+
+/* ── Export data ── */
+document.getElementById("exportDataBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("exportDataBtn");
+  setBusy(btn, "Exporting…");
+  try {
+    const res  = await fetch("/api/auth/export-data", { credentials: "same-origin" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { toast(data.error || "Export failed.", "error"); return; }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = "briefme-data.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast("Data exported successfully.");
+  } catch (_) { toast("Network error — please try again.", "error"); }
+  finally { setIdle(btn); }
+});
+
+/* ── Delete account ── */
+document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
+  const confirmed = window.confirm("Are you absolutely sure? This will permanently delete your account and cannot be undone.");
+  if (!confirmed) return;
+  const pw = prompt("Enter your current password to confirm deletion (leave blank if signed in via Google/Apple):");
+  const btn = document.getElementById("deleteAccountBtn");
+  setBusy(btn, "Deleting…");
+  try {
+    const res  = await fetch("/api/auth/delete-account", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "Origin": window.location.origin },
+      body: JSON.stringify({ password: pw || "" }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      toast("Account deleted. Redirecting…");
+      setTimeout(() => { window.location.href = "/login"; }, 1500);
+    } else {
+      toast(data.error || "Deletion failed.", "error");
+    }
+  } catch (_) { toast("Network error — please try again.", "error"); }
+  finally { setIdle(btn); }
+});
+</script>
+
+</body>
+</html>

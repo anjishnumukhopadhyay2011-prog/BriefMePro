@@ -1,0 +1,12 @@
+{
+  "name": "BriefMe Pro",
+  "short_name": "BriefMe",
+  "description": "Live geopolitical intelligence, mapped to Earth.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1A1815",
+  "theme_color": "#C0664B",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

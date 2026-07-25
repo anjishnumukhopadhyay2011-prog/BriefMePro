@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /terms
+Allow: /privacy
+Allow: /refund
+Allow: /demo
+Disallow: /api/
+Disallow: /account
+Disallow: /admin
+Disallow: /onboarding
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /2fa
+
+# Static assets are public-cacheable but uninteresting to index
+Disallow: /static/
+
+Sitemap: https://yourdomain.com/sitemap.xml

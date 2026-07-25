@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BriefMe — Subscribe</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+    <link rel="stylesheet" href="/static/auth.css" />
+    <style>
+      .rzp-trust {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.76rem;
+        color: var(--muted);
+        margin: 16px 0;
+        justify-content: center;
+      }
+      .rzp-trust svg { flex-shrink: 0; color: var(--teal); }
+    </style>
+  </head>
+  <body>
+
+    <div class="auth-bg">
+      <canvas id="authParticles"></canvas>
+    </div>
+
+    <div class="auth-page" style="align-items:center;justify-content:center;">
+      <div class="auth-right" style="padding:40px 24px;">
+        <div class="auth-card" style="max-width:480px;">
+
+          <div class="auth-brand">
+            <div class="auth-brand-dot"></div>
+            <span class="auth-brand-name">BriefMe</span>
+          </div>
+
+          <h1 class="auth-title">Activate access</h1>
+          <p class="auth-subtitle">Choose your plan and get instant access to the live intelligence dashboard.</p>
+
+          <!-- Plan toggle -->
+          <div class="plan-toggle" id="planToggle">
+            <button class="plan-toggle-btn active" data-plan="monthly" id="toggleMonthly">Monthly</button>
+            <button class="plan-toggle-btn" data-plan="annual" id="toggleAnnual">
+              Annual &nbsp;<span style="font-size:0.68rem;opacity:0.7">Save 25%</span>
+            </button>
+          </div>
+
+          <!-- Plan card -->
+          <div class="plan-card">
+            <div class="plan-name" id="planLabel">Intelligence Pro</div>
+            <div class="plan-price" id="planPrice">
+              <span id="priceCurrencySymbol" style="color:var(--muted);font-size:1rem;vertical-align:top;line-height:2.2">₹</span><!--
+              --><span id="priceAmount">—</span><span id="priceCents"></span>
+              <span id="priceInterval">&nbsp;/ mo</span>
+            </div>
+            <div class="plan-save-tag" id="saveBadge">2 months free — billed annually</div>
+
+            <ul class="plan-features">
+              <li>Live globe with real-time geolocated events</li>
+              <li>AI-scored severity, urgency &amp; personal impact</li>
+              <li>Verified multi-source coverage with trust ratings</li>
+              <li>Predictive forecasting with scenario simulation</li>
+              <li>Narrative shift detection &amp; opportunity signals</li>
+            </ul>
+          </div>
+
+          <!-- Payment trust badge -->
+          <div class="rzp-trust">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Secure payments via Razorpay &mdash; UPI, cards &amp; net banking supported.
+          </div>
+
+          <div id="subBanner" class="auth-banner"></div>
+
+          <button class="cta-btn" id="subscribeBtn">Activate subscription</button>
+
+          <div class="auth-footer">
+            <a href="/">Skip for now — explore the demo</a>
+            <div style="margin-top: 14px; font-size: 0.74rem; color: var(--muted);">
+              By subscribing you agree to our
+              <a href="/terms" target="_blank">Terms</a>,
+              <a href="/privacy" target="_blank">Privacy Policy</a>, and
+              <a href="/refund" target="_blank">Refund Policy</a>.
+              Cancel any time from Account &rarr; Subscription.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Razorpay checkout SDK (loaded lazily on button click) -->
+    <script src="/static/auth.js"></script>
+    <script>
+      initParticles("authParticles");
+
+      // ── Price display ─────────────────────────────────────────────────────
+      const PRICES = {
+        monthly: { major: "—", minor: "",  interval: "/ mo", save: false },
+        annual:  { major: "—", minor: "",  interval: "/ yr", save: true  },
+      };
+      let currentPlan  = "monthly";
+      let detectedGW   = "razorpay"; // updated by loadPrice()
+      let rawMonthly   = null;       // number in base unit (paise or cents)
+
+      const CURRENCY_SYMBOLS = {
+        inr: "₹", usd: "$", eur: "€", gbp: "£",
+      };
+
+      function currencySymbol(code) {
+        return CURRENCY_SYMBOLS[(code || "").toLowerCase()] || (code || "").toUpperCase() + " ";
+      }
+
+      async function loadPrice() {
+        try {
+          const res  = await fetch("/api/auth/price-info", { credentials: "same-origin" });
+          const data = await res.json().catch(() => ({}));
+          detectedGW = data.gateway || "razorpay";
+
+          const sym = currencySymbol(data.currency || "inr");
+          document.getElementById("priceCurrencySymbol").textContent = sym;
+
+          if (data.amount) {
+            rawMonthly = parseFloat(data.amount);
+            const parts = String(data.amount).split(".");
+            PRICES.monthly.major = parts[0];
+            PRICES.monthly.minor = parts[1] ? "." + parts[1] : "";
+
+            // Annual ≈ monthly × 12 × 0.75 (25% off)
+            const annualTotal  = (rawMonthly * 12 * 0.75).toFixed(2);
+            const ap           = String(annualTotal).split(".");
+            PRICES.annual.major = ap[0];
+            PRICES.annual.minor = ap[1] ? "." + ap[1] : "";
+          }
+        } catch (_) { /* show dashes */ }
+        renderPrice();
+      }
+
+      function renderPrice() {
+        const p = PRICES[currentPlan];
+        document.getElementById("priceAmount").textContent   = p.major;
+        document.getElementById("priceCents").textContent    = p.minor;
+        document.getElementById("priceInterval").textContent = "\u00a0" + p.interval;
+        document.getElementById("saveBadge").style.display   = p.save ? "inline-block" : "none";
+      }
+
+      // Toggle monthly / annual
+      document.getElementById("planToggle").addEventListener("click", (e) => {
+        const btn = e.target.closest(".plan-toggle-btn");
+        if (!btn) return;
+        document.querySelectorAll(".plan-toggle-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentPlan = btn.dataset.plan;
+        renderPrice();
+      });
+
+      loadPrice();
+
+      // ── Razorpay checkout ─────────────────────────────────────────────────
+      let rzpScriptLoaded = false;
+
+      function loadRazorpayScript() {
+        return new Promise((resolve, reject) => {
+          if (rzpScriptLoaded) { resolve(); return; }
+          const s = document.createElement("script");
+          s.src = "https://checkout.razorpay.com/v1/checkout.js";
+          s.onload  = () => { rzpScriptLoaded = true; resolve(); };
+          s.onerror = () => reject(new Error("Failed to load Razorpay SDK"));
+          document.head.appendChild(s);
+        });
+      }
+
+      document.getElementById("subscribeBtn").addEventListener("click", async () => {
+        const btn = document.getElementById("subscribeBtn");
+        setBtnLoading(btn, "Opening checkout\u2026");
+        hideBanner("subBanner");
+
+        try {
+          // 1 — Create order on server
+          const orderRes  = await fetch("/api/razorpay/create-order", {
+            method:      "POST",
+            headers:     { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body:        JSON.stringify({ plan: currentPlan }),
+          });
+          const orderData = await orderRes.json().catch(() => ({}));
+
+          if (!orderRes.ok || !orderData.order_id) {
+            if (orderRes.status === 401) {
+              showBanner("subBanner", "error", "Please <a href=\"/login\">sign in</a> to subscribe.");
+            } else {
+              showBanner("subBanner", "error", orderData.error || "Could not start checkout — please try again.");
+            }
+            setBtnReady(btn, "Activate subscription");
+            return;
+          }
+
+          // 2 — Load Razorpay SDK
+          await loadRazorpayScript();
+
+          // 3 — Open Razorpay checkout popup
+          const options = {
+            key:         orderData.key_id,
+            amount:      orderData.amount,
+            currency:    orderData.currency,
+            name:        orderData.name || "BriefMe Pro",
+            description: currentPlan === "annual" ? "Annual subscription" : "Monthly subscription",
+            order_id:    orderData.order_id,
+            prefill: {
+              email: orderData.email || "",
+            },
+            theme: { color: "#67e9ff" },
+            modal: {
+              ondismiss: () => {
+                setBtnReady(btn, "Activate subscription");
+                showBanner("subBanner", "error", "Checkout cancelled.");
+              },
+            },
+            handler: async (response) => {
+              // 4 — Verify payment on server
+              setBtnLoading(btn, "Verifying payment\u2026");
+              hideBanner("subBanner");
+
+              try {
+                const verRes  = await fetch("/api/razorpay/verify", {
+                  method:      "POST",
+                  headers:     { "Content-Type": "application/json" },
+                  credentials: "same-origin",
+                  body:        JSON.stringify({
+                    razorpay_order_id:   response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature:  response.razorpay_signature,
+                    plan:                currentPlan,
+                  }),
+                });
+                const verData = await verRes.json().catch(() => ({}));
+
+                if (verRes.ok && verData.ok) {
+                  showBanner("subBanner", "success", "Payment confirmed! Redirecting\u2026");
+                  setTimeout(() => { window.location.href = verData.redirect || "/"; }, 800);
+                } else {
+                  showBanner("subBanner", "error", verData.error || "Payment verification failed — contact support.");
+                  setBtnReady(btn, "Activate subscription");
+                }
+              } catch (_) {
+                showBanner("subBanner", "error", "Network error during verification — please contact support.");
+                setBtnReady(btn, "Activate subscription");
+              }
+            },
+          };
+
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+
+        } catch (err) {
+          showBanner("subBanner", "error", err.message || "Could not load payment SDK — check your connection.");
+          setBtnReady(btn, "Activate subscription");
+        }
+      });
+    </script>
+
+  </body>
+</html>

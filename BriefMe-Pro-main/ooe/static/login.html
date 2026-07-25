@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BriefMe — Sign In</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+    <link rel="stylesheet" href="/static/auth.css" />
+  </head>
+  <body>
+
+    <!-- Animated background -->
+    <div class="auth-bg">
+      <canvas id="authParticles"></canvas>
+    </div>
+
+    <div class="auth-page">
+      <div class="auth-split">
+
+        <!-- ── Left branding panel ── -->
+        <div class="auth-left">
+          <div class="auth-left-brand">
+            <div class="auth-logo-ring">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="22" stroke="rgba(103,233,255,0.25)" stroke-width="1"/>
+                <path d="M24 2 A22 22 0 0 1 46 24" stroke="rgba(103,233,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M24 46 A22 22 0 0 1 2 24" stroke="rgba(61,245,192,0.6)" stroke-width="1" stroke-linecap="round"/>
+              </svg>
+              <div class="auth-logo-core"></div>
+            </div>
+            <span class="auth-left-wordmark">BriefMe</span>
+          </div>
+
+          <h2 class="auth-left-headline">Intelligence<br>mapped to<br>the real world.</h2>
+          <p class="auth-left-sub">
+            Live verified events glow where they unfold. Forecasts stay tethered to geography.
+            Signals you can act on — every minute of every day.
+          </p>
+
+          <div class="auth-stats">
+            <div class="auth-stat">
+              <span class="auth-stat-dot"></span>
+              <span class="auth-stat-label">Live events tracked</span>
+              <span class="auth-stat-value" id="statEvents">—</span>
+            </div>
+            <div class="auth-stat">
+              <span class="auth-stat-dot" style="background:var(--amber);box-shadow:0 0 8px var(--amber)"></span>
+              <span class="auth-stat-label">Active sources</span>
+              <span class="auth-stat-value" id="statSources">—</span>
+            </div>
+            <div class="auth-stat">
+              <span class="auth-stat-dot" style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></span>
+              <span class="auth-stat-label">System status</span>
+              <span class="auth-stat-value" style="color:var(--teal)">Operational</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Right form panel ── -->
+        <div class="auth-right">
+          <div class="auth-card">
+
+            <div class="auth-brand">
+              <div class="auth-brand-dot"></div>
+              <span class="auth-brand-name">BriefMe</span>
+            </div>
+
+            <h1 class="auth-title">Sign in</h1>
+            <p class="auth-subtitle">Access your live intelligence dashboard.</p>
+
+            <div id="loginBanner" class="auth-banner"></div>
+
+            <!-- Social sign-in — redirect flow (no JS SDK needed) -->
+            <a href="/api/auth/oauth/google/start" class="social-btn">
+              <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+              Continue with Google
+            </a>
+
+            <div class="auth-divider">or sign in with email</div>
+
+            <form id="loginForm" autocomplete="on" novalidate>
+
+              <div class="auth-field">
+                <label class="auth-label" for="email">Email address</label>
+                <div class="auth-input-wrap">
+                  <input
+                    id="email"
+                    class="auth-input"
+                    type="email"
+                    name="email"
+                    autocomplete="email"
+                    required
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+
+              <div class="auth-field">
+                <label class="auth-label" for="password">Password</label>
+                <div class="auth-input-wrap">
+                  <input
+                    id="password"
+                    class="auth-input has-btn"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                    placeholder="••••••••"
+                  />
+                  <button type="button" class="show-pw-btn" id="showPw" aria-label="Show password"></button>
+                </div>
+              </div>
+
+              <div style="text-align:right; margin:-8px 0 12px;">
+                <a href="/forgot-password" style="font-size:0.75rem; color:var(--muted);">Forgot password?</a>
+              </div>
+
+              <div class="auth-check-field">
+                <input type="checkbox" class="auth-checkbox" id="rememberMe" name="remember" />
+                <label class="auth-check-label" for="rememberMe">Remember this device for 90 days</label>
+              </div>
+
+              <button type="submit" class="cta-btn" id="submitBtn">Sign in</button>
+
+            </form>
+
+            <div class="auth-footer">
+              Don't have an account? <a href="/register">Create one &rsaquo;</a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="/static/auth.js"></script>
+    <script>
+      initParticles("authParticles");
+      bindShowHide("password", "showPw");
+      loadAuthStats();
+
+      // 2FA was removed in v1.0.1 — login completes in a single step.
+      function handle2FA(_data) { return false; }
+
+      // ── Email / password form ────────────────────────────────────
+      const form      = document.getElementById("loginForm");
+      const submitBtn = document.getElementById("submitBtn");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email    = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const remember = document.getElementById("rememberMe").checked;
+
+        if (!email || !email.includes("@")) {
+          showBanner("loginBanner", "error", "Please enter a valid email address.");
+          return;
+        }
+        if (!password) {
+          showBanner("loginBanner", "error", "Password is required.");
+          return;
+        }
+
+        await submitForm({
+          url: "/api/auth/login",
+          data: { email, password, remember },
+          btnEl: submitBtn,
+          btnLoadText: "Authenticating\u2026",
+          btnReadyText: "Sign in",
+          bannerId: "loginBanner",
+          onSuccess(data) {
+            if (handle2FA(data)) return;
+            showBanner("loginBanner", "success", "Access granted. Redirecting\u2026");
+            setTimeout(() => { window.location.href = data.redirect || "/"; }, 600);
+          },
+          on429(body, retryAfter) {
+            showBanner(
+              "loginBanner", "error",
+              "Too many attempts. Try again in <strong><span class=\"auth-countdown\" id=\"retryCountdown\">" + retryAfter + "</span>s</strong>."
+            );
+            startCountdown("retryCountdown", retryAfter, () => {
+              hideBanner("loginBanner");
+              setBtnReady(submitBtn, "Sign in");
+            });
+          },
+        });
+      });
+
+      // Google and Apple sign-in use redirect flow (handled by the <a> tag above).
+      // No JS SDK needed for the redirect flow.
+    </script>
+
+    <!-- Apple Sign In SDK (loaded last so it doesn't block render) -->
+    <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async></script>
+    <script>
+      // Server replaces this placeholder with the real client ID at runtime
+      // when GOOGLE_CLIENT_ID is set. We deliberately do NOT hide the button
+      // when it's empty — clicking it redirects to /login?error=google_not_configured
+      // which surfaces a helpful banner. Always-visible button > hidden feature.
+      window.__GOOGLE_CLIENT_ID__ = "";
+
+      // Show banner if the redirect came back with ?error=google_not_configured
+      (function() {
+        var params = new URLSearchParams(window.location.search);
+        var err = params.get('error');
+        if (err === 'google_not_configured') {
+          var banner = document.getElementById('authBanner');
+          if (banner) {
+            banner.textContent = 'Google sign-in is not configured on this server yet. Use email + password below.';
+            banner.classList.add('visible', 'info');
+          }
+        }
+      })();
+    </script>
+
+  </body>
+</html>

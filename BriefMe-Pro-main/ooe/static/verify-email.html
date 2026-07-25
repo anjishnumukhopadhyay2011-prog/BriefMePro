@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BriefMe &mdash; Verify Email</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+    <link rel="stylesheet" href="/static/auth.css" />
+  </head>
+  <body>
+
+    <!-- Animated background -->
+    <div class="auth-bg">
+      <canvas id="authParticles"></canvas>
+    </div>
+
+    <div class="auth-page" style="align-items:center; justify-content:center;">
+      <div style="width:100%; max-width:420px; padding:24px 16px;">
+        <div class="auth-card">
+
+          <div class="auth-brand">
+            <div class="auth-brand-dot"></div>
+            <span class="auth-brand-name">BriefMe</span>
+          </div>
+
+          <h1 class="auth-title">Verifying your email&hellip;</h1>
+          <p class="auth-subtitle">Please wait while we confirm your address.</p>
+
+          <!-- Spinner shown on load -->
+          <div id="spinner" class="spinner" style="margin:24px auto;"></div>
+
+          <!-- Success state -->
+          <div id="successState" style="display:none; text-align:center;">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 16px; display:block;">
+              <circle cx="32" cy="32" r="30" stroke="rgba(61,245,192,0.25)" stroke-width="1.5"/>
+              <circle cx="32" cy="32" r="30" stroke="rgba(61,245,192,0.15)" stroke-width="8" fill="none"/>
+              <path d="M18 32 L27 42 L46 22" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h2 style="color:var(--text); font-size:1.25rem; font-weight:600; margin:0 0 8px;">Email verified!</h2>
+            <p style="color:var(--muted); font-size:0.875rem; margin:0 0 20px;">Your account is now active.</p>
+            <a href="/" class="cta-btn" style="display:inline-block; margin-top:16px;">Go to dashboard</a>
+          </div>
+
+          <!-- Error state -->
+          <div id="errorState" style="display:none;">
+            <div id="errorMsg" class="auth-banner error visible"></div>
+            <button
+              type="button"
+              class="cta-btn"
+              id="resendBtn"
+              style="margin-top:16px;"
+              onclick="resendVerification()"
+            >
+              Resend verification email
+            </button>
+            <div id="resendMsg" style="margin-top:12px;"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/auth.js"></script>
+    <script>
+      initParticles("authParticles");
+
+      const token = new URLSearchParams(window.location.search).get("token") || "";
+
+      async function verify() {
+        if (!token) { showState("error", "Missing verification token. Please use the link from your email."); return; }
+        try {
+          const res  = await fetch("/api/auth/verify-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok) { showState("success"); }
+          else { showState("error", data.error || "Verification failed."); }
+        } catch { showState("error", "Network error. Please try again."); }
+      }
+
+      function showState(state, msg) {
+        document.getElementById("spinner").style.display = "none";
+        if (state === "success") {
+          document.getElementById("successState").style.display = "block";
+        } else {
+          document.getElementById("errorMsg").textContent = msg;
+          document.getElementById("errorState").style.display = "block";
+        }
+      }
+
+      async function resendVerification() {
+        const btn = document.getElementById("resendBtn");
+        const msgEl = document.getElementById("resendMsg");
+        btn.disabled = true;
+        btn.textContent = "Sending\u2026";
+        try {
+          const res  = await fetch("/api/auth/resend-verification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+          });
+          if (res.status === 401) {
+            msgEl.innerHTML = '<span style="color:var(--muted); font-size:0.8125rem;">Please <a href="/login" style="color:var(--teal);">sign in first</a> to resend your verification email.</span>';
+            btn.disabled = false;
+            btn.textContent = "Resend verification email";
+            return;
+          }
+          const data = await res.json().catch(() => ({}));
+          if (res.ok) {
+            msgEl.innerHTML = '<span style="color:var(--teal); font-size:0.8125rem;">Verification email sent. Check your inbox.</span>';
+            btn.textContent = "Resend verification email";
+          } else {
+            msgEl.innerHTML = '<span style="color:var(--error, #ff6b6b); font-size:0.8125rem;">' + (data.error || "Could not resend. Please try again.") + '</span>';
+            btn.disabled = false;
+            btn.textContent = "Resend verification email";
+          }
+        } catch {
+          msgEl.innerHTML = '<span style="color:var(--error, #ff6b6b); font-size:0.8125rem;">Network error. Please try again.</span>';
+          btn.disabled = false;
+          btn.textContent = "Resend verification email";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", verify);
+    </script>
+
+  </body>
+</html>

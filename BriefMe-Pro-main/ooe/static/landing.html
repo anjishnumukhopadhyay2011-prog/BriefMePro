@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Live verified geopolitical event intelligence mapped to the real world. Conflict, economy, climate, and more — scored, forecast, and visualised on an interactive globe." />
+    <meta property="og:title" content="BriefMe Pro — Live Intelligence Dashboard" />
+    <meta property="og:description" content="Verified events glow where they unfold. Forecasts stay tethered to geography. Signals you can act on, every minute of every day." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BriefMe Pro" />
+    <meta name="twitter:description" content="Live geopolitical intelligence mapped to the real world." />
+    <meta name="twitter:image" content="/og-image.svg" />
+    <title>BriefMe — Live Intelligence, Mapped to Earth</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1A1815">
+    <link rel="stylesheet" href="/static/auth.css" />
+    <style>
+      /* ────────────────────────────────────────────────────────────
+         "Editorial" theme — warm cream background, serif headings,
+         restrained terracotta accent, generous whitespace. Inspired
+         by editorial publications and modern AI-product marketing
+         pages. Overrides the dark auth.css tokens on this page only.
+         ──────────────────────────────────────────────────────────── */
+      :root {
+        --bg-void:    #FAF8F4;
+        --bg-deep:    #F2EDE5;
+        --bg-panel:   #FFFFFF;
+        --line:       #E5DFD4;
+        --line-bright:#C7BFB0;
+        --text:       #1A1815;
+        --text-sub:   #4A463E;
+        --muted:      #8B8478;
+        --accent:     #C0664B;
+        --accent-dim: rgba(192, 102, 75, 0.10);
+      }
+
+      body {
+        background: var(--bg-void);
+        color: var(--text);
+        font-family: 'Charter','Iowan Old Style','Georgia',serif;
+        font-feature-settings: "ss01" on, "kern" on;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Kill the dark animated particle field on this themed landing */
+      .auth-bg, #authParticles { display: none !important; }
+
+      /* Landing-specific extensions */
+      .land-page {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── Nav ── */
+      .land-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 48px;
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(250, 248, 244, 0.92);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      .land-nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+
+      .land-nav-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--accent);
+        position: relative;
+      }
+      .land-nav-dot::before { display: none; }
+
+      .land-nav-name {
+        font-family: 'Charter','Iowan Old Style','Georgia',serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        text-transform: none;
+        color: var(--text);
+      }
+
+      .land-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .nav-link {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text-sub);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 400;
+        transition: color 140ms;
+        padding: 6px 10px;
+      }
+      .nav-link:hover { color: var(--text); }
+
+      .nav-cta {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--text);
+        color: var(--bg-void);
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        text-transform: none;
+        text-decoration: none;
+        transition: background 140ms ease, transform 100ms;
+        white-space: nowrap;
+      }
+      .nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+      /* ── Hero ── */
+      .land-hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 120px 24px 80px;
+        max-width: 880px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: none;
+        color: var(--text-sub);
+        background: var(--bg-deep);
+        border: 1px solid var(--line);
+        padding: 6px 14px;
+        border-radius: 999px;
+        margin-bottom: 32px;
+        animation: fadeUp 500ms ease both;
+      }
+
+      .hero-eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .hero-title {
+        font-family: 'Charter','Iowan Old Style','Georgia',serif;
+        font-size: clamp(2.4rem, 6vw, 4.6rem);
+        font-weight: 500;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin-bottom: 28px;
+        color: var(--text);
+        animation: fadeUp 500ms 80ms ease both;
+      }
+      .hero-title em { font-style: italic; color: var(--accent); }
+
+      .hero-sub {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 1.18rem;
+        font-weight: 400;
+        line-height: 1.6;
+        color: var(--text-sub);
+        max-width: 580px;
+        margin: 0 auto 44px;
+        animation: fadeUp 500ms 150ms ease both;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: center;
+        animation: fadeUp 500ms 220ms ease both;
+      }
+
+      .hero-cta-primary {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--text);
+        color: var(--bg-void);
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-size: 0.98rem;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        text-transform: none;
+        text-decoration: none;
+        transition: background 140ms ease, transform 100ms ease;
+      }
+      .hero-cta-primary:hover {
+        background: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      .hero-cta-ghost {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text);
+        padding: 14px 26px;
+        border-radius: 8px;
+        border: 1px solid var(--line-bright);
+        font-size: 0.98rem;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        text-transform: none;
+        text-decoration: none;
+        transition: border-color 140ms, background 140ms, color 140ms, transform 100ms;
+      }
+      .hero-cta-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      /* ── Divider stat bar ── */
+      .stat-bar {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        overflow: hidden;
+        background: var(--bg-deep);
+        animation: fadeUp 500ms 300ms ease both;
+      }
+
+      .stat-bar-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 20px;
+        background: var(--bg-deep);
+        gap: 6px;
+        border-right: 1px solid var(--line);
+      }
+      .stat-bar-item:last-child { border-right: none; }
+
+      .stat-bar-num {
+        font-family: 'Charter','Iowan Old Style','Georgia',serif;
+        font-size: 2rem;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      .stat-bar-label {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 0.78rem;
+        color: var(--muted);
+        letter-spacing: 0.02em;
+        text-transform: none;
+        text-align: center;
+      }
+
+      /* ── Feature grid ── */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 0;
+        background: var(--bg-void);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .feature {
+        background: var(--bg-void);
+        padding: 48px 40px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        transition: background 200ms;
+      }
+      .feature:hover { background: var(--bg-deep); }
+
+      .feature-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--accent-dim);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+      }
+
+      .feature-title {
+        font-family: 'Charter','Iowan Old Style','Georgia',serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        margin-bottom: 10px;
+        color: var(--text);
+      }
+
+      .feature-body {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 0.96rem;
+        color: var(--text-sub);
+        line-height: 1.6;
+      }
+
+      /* ── Bottom CTA ── */
+      .land-bottom {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 120px 24px;
+        text-align: center;
+        gap: 24px;
+        background: var(--bg-deep);
+      }
+
+      .land-bottom-title {
+        font-family: 'Charter','Iowan Old Style','Georgia',serif;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        max-width: 600px;
+        color: var(--text);
+      }
+
+      .land-bottom-sub {
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 1.05rem;
+        color: var(--text-sub);
+        max-width: 480px;
+        line-height: 1.6;
+      }
+
+      /* ── Footer ── */
+      .land-footer {
+        border-top: 1px solid var(--line);
+        padding: 28px 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 0.85rem;
+        color: var(--muted);
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .land-footer a { color: var(--muted); text-decoration: none; }
+      .land-footer a:hover { color: var(--accent); }
+
+      @media (max-width: 720px) {
+        /* Nav: shrink padding, drop "Pricing" + "Live demo" so the brand and the
+           primary CTA fit on one line. /pricing and /demo stay reachable from the
+           hero buttons + footer. */
+        .land-nav { padding: 14px 16px; gap: 8px; }
+        .land-nav-actions { gap: 8px; }
+        .land-nav-actions .nav-link[href="/pricing"],
+        .land-nav-actions .nav-link[href="/demo"] { display: none; }
+        .land-nav-actions .nav-link { padding: 6px 4px; font-size: 0.84rem; }
+        .nav-cta { padding: 8px 14px; font-size: 0.84rem; }
+
+        /* Hero: tighter spacing, smaller eyebrow, stack the two CTAs full-width */
+        .land-hero { padding: 48px 20px 40px; }
+        .hero-eyebrow { font-size: 0.66rem; padding: 5px 12px; margin-bottom: 20px; letter-spacing: 0.18em; }
+        .hero-title br { display: none; }
+        .hero-sub { font-size: 0.98rem; line-height: 1.55; padding: 0 4px; }
+        .hero-actions { flex-direction: column; gap: 10px; width: 100%; max-width: 320px; margin: 0 auto; }
+        .hero-actions a { width: 100%; text-align: center; padding: 13px 18px !important; }
+
+        /* Stat bar: 2x2 grid on phones, smaller numbers */
+        .stat-bar { display: grid; grid-template-columns: 1fr 1fr; }
+        .stat-bar-item { padding: 16px 10px; }
+        .stat-bar-num { font-size: 1.3rem; }
+        .stat-bar-label { font-size: 0.64rem; letter-spacing: 0.06em; }
+
+        /* Features: single column, less padding */
+        .features { grid-template-columns: 1fr; }
+        .feature { padding: 28px 22px; }
+        .feature-title { font-size: 0.98rem; }
+        .feature-body { font-size: 0.88rem; }
+
+        /* Bottom CTA */
+        .land-bottom { padding: 48px 20px; gap: 16px; }
+        .land-bottom-sub { font-size: 0.92rem; }
+        .land-bottom > div { flex-direction: column; gap: 10px !important; width: 100%; max-width: 320px; }
+        .land-bottom > div a { width: 100%; text-align: center; }
+
+        /* Footer wraps cleanly */
+        .land-footer {
+          flex-direction: column;
+          padding: 22px 16px;
+          text-align: center;
+          font-size: 0.74rem;
+          line-height: 1.8;
+        }
+      }
+
+      /* Tiny phones (≤380px) — squeeze a bit more */
+      @media (max-width: 380px) {
+        .land-nav-name { font-size: 0.86rem; }
+        .land-nav-actions .nav-link[href="/login"] { display: none; }
+        .hero-title { font-size: 2rem !important; letter-spacing: -0.025em; }
+        .stat-bar-num { font-size: 1.15rem; }
+      }
+
+      /* Universal: prevent horizontal scroll caused by any oversize element */
+      html, body { max-width: 100%; overflow-x: hidden; }
+    </style>
+  </head>
+  <body>
+
+    <div class="auth-bg">
+      <canvas id="authParticles"></canvas>
+    </div>
+
+    <div class="land-page">
+
+      <!-- ── Nav ── -->
+      <nav class="land-nav">
+        <a href="/" class="land-nav-brand">
+          <div class="land-nav-dot"></div>
+          <span class="land-nav-name">BriefMe Pro</span>
+        </a>
+        <div class="land-nav-actions">
+          <a href="/pricing"  class="nav-link">Pricing</a>
+          <a href="/demo"     class="nav-link">Live demo</a>
+          <a href="/login"    class="nav-link">Sign in</a>
+          <a href="/register" class="nav-cta">Get started</a>
+        </div>
+      </nav>
+
+      <!-- ── Hero ── -->
+      <section class="land-hero">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          30 sources &middot; Updated every 3 minutes
+        </div>
+
+        <h1 class="hero-title">
+          What's happening, <em>everywhere</em>,<br>right now.
+        </h1>
+
+        <p class="hero-sub">
+          A live geopolitical-intelligence dashboard for people who want
+          ground truth without the noise. Thirty open sources, scored for
+          severity and confidence, deduplicated across outlets, mapped to
+          a personalised globe.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/demo"     class="hero-cta-primary">Open the live demo &rarr;</a>
+          <a href="/pricing"  class="hero-cta-ghost">See pricing</a>
+        </div>
+      </section>
+
+      <!-- ── Stat bar ── -->
+      <div class="stat-bar">
+        <div class="stat-bar-item">
+          <span class="stat-bar-num" id="liveCount">—</span>
+          <span class="stat-bar-label">Live events tracked</span>
+        </div>
+        <div class="stat-bar-item">
+          <span class="stat-bar-num">30+</span>
+          <span class="stat-bar-label">Verified sources</span>
+        </div>
+        <div class="stat-bar-item">
+          <span class="stat-bar-num">3 min</span>
+          <span class="stat-bar-label">Refresh interval</span>
+        </div>
+        <div class="stat-bar-item">
+          <span class="stat-bar-num">AI</span>
+          <span class="stat-bar-label">Severity scoring</span>
+        </div>
+      </div>
+
+      <!-- ── Feature grid ── -->
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🌍</div>
+          <div class="feature-title">Globe-mapped intelligence</div>
+          <div class="feature-body">
+            Stories appear as glowing points exactly where they're happening.
+            Drag to rotate, scroll to zoom, click to read.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">AI severity scoring</div>
+          <div class="feature-body">
+            Every event is scored across severity, urgency, personal impact,
+            and cognitive load — automatically, on every refresh.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔭</div>
+          <div class="feature-title">Predictive forecasting</div>
+          <div class="feature-body">
+            Run what-if simulations — ceasefire, market shock, supply surge —
+            and get a projected outcome paragraph in seconds.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🧠</div>
+          <div class="feature-title">Narrative shift detection</div>
+          <div class="feature-body">
+            BriefMe tracks how stories are moving — which narratives are
+            accelerating, which are reversing, and where opportunities sit.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✅</div>
+          <div class="feature-title">Multi-source verification</div>
+          <div class="feature-body">
+            Events are cross-referenced across 30+ sources before they surface.
+            Trust scores, coverage depth, and recency all factor in.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-title">Private by design</div>
+          <div class="feature-body">
+            Runs locally on your machine. No tracking, no profiling,
+            no third-party analytics. Your intelligence, your device.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bottom CTA ── -->
+      <section class="land-bottom">
+        <h2 class="land-bottom-title">Try it without signing up.</h2>
+        <p class="land-bottom-sub">
+          The live demo is read-only access to the same dashboard paying users get.
+          No card, no email, no signup. If you like it, $9/month unlocks
+          personalisation, alerts, and the AI scenario panel.
+        </p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="/demo" class="hero-cta-primary" style="font-size:0.92rem;padding:13px 28px;">
+            Open the live demo &rarr;
+          </a>
+          <a href="/pricing" class="hero-cta-ghost" style="font-size:0.88rem;padding:13px 24px;">
+            See pricing
+          </a>
+        </div>
+      </section>
+
+      <!-- ── Footer ── -->
+      <footer class="land-footer">
+        <span>&copy; 2026 BriefMe Pro</span>
+        <span>
+          <a href="/terms">Terms</a> &nbsp;&middot;&nbsp;
+          <a href="/privacy">Privacy</a> &nbsp;&middot;&nbsp;
+          <a href="/refund">Refund</a> &nbsp;&middot;&nbsp;
+          <a href="/login">Sign in</a>
+        </span>
+      </footer>
+
+    </div>
+
+    <script src="/static/auth.js"></script>
+    <script>
+      initParticles("authParticles");
+
+      // Load live event count from public metrics endpoint
+      (async () => {
+        try {
+          const res  = await fetch("/api/metrics", { credentials: "same-origin" });
+          const data = await res.json().catch(() => ({}));
+          if (data.total_events !== undefined) {
+            animateTicker("liveCount", data.total_events, 1400);
+          }
+        } catch (_) { /* non-fatal */ }
+      })();
+    </script>
+
+  </body>
+</html>
